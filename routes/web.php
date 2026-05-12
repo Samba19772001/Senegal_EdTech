@@ -18,6 +18,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/eleves', function () {
     return view('eleves.index');
 })->name('eleves.index');
+    Route::get('/matieres', function () {
+    return view('matieres.index');
+})->name('matieres.index');
 });
 
 require __DIR__.'/auth.php';
