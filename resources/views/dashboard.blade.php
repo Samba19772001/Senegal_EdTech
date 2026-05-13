@@ -2,7 +2,7 @@
 
 @section('title', 'Dashboard — Senegal EdTech')
 @section('page_label', 'TABLEAU DE BORD')
-@section('page_title', 'Bienvenue 👋')
+@section('page_title', 'Bienvenue')
 
 @section('content')
 
@@ -18,10 +18,10 @@
                             d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
                     </svg>
                 </div>
-                <span class="text-xs font-semibold text-green-600 bg-green-50 px-2 py-1 rounded-full">+2 ce mois</span>
+                <span class="text-xs font-semibold text-green-600 bg-green-50 px-2 py-1 rounded-full">Total</span>
             </div>
             <p class="text-xs text-text-muted uppercase tracking-widest font-medium mb-1">Nombre d'élèves</p>
-            <p class="text-3xl font-bold text-text-dark">42</p>
+            <p class="text-3xl font-bold text-text-dark">{{ $totalEleves }}</p>
         </div>
 
         {{-- Matières --}}
@@ -36,7 +36,7 @@
                 <span class="text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded-full">Actif</span>
             </div>
             <p class="text-xs text-text-muted uppercase tracking-widest font-medium mb-1">Nombre de matières</p>
-            <p class="text-3xl font-bold text-text-dark">8</p>
+            <p class="text-3xl font-bold text-text-dark">{{ $totalMatieres }}</p>
         </div>
 
         {{-- Notes --}}
@@ -48,10 +48,10 @@
                             d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                     </svg>
                 </div>
-                <span class="text-xs font-semibold text-amber-600 bg-amber-50 px-2 py-1 rounded-full">85% complété</span>
+                <span class="text-xs font-semibold text-amber-600 bg-amber-50 px-2 py-1 rounded-full">Total</span>
             </div>
             <p class="text-xs text-text-muted uppercase tracking-widest font-medium mb-1">Notes enregistrées</p>
-            <p class="text-3xl font-bold text-text-dark">324</p>
+            <p class="text-3xl font-bold text-text-dark">{{ $totalNotes }}</p>
         </div>
 
         {{-- Bulletins --}}
@@ -63,13 +63,13 @@
                             d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
                     </svg>
                 </div>
-                <span class="text-xs font-semibold text-red-600 bg-red-50 px-2 py-1 rounded-full">Action requise</span>
+                <span class="text-xs font-semibold text-red-600 bg-red-50 px-2 py-1 rounded-full">Total</span>
             </div>
             <p class="text-xs text-text-muted uppercase tracking-widest font-medium mb-1">Bulletins générés</p>
-            <p class="text-3xl font-bold text-text-dark">12</p>
+            <p class="text-3xl font-bold text-text-dark">{{ $totalBulletins }}</p>
         </div>
 
-    </div>
+    </div>        
 
     {{-- Actions Rapides + Activités --}}
     <div class="grid grid-cols-3 gap-5">
