@@ -72,7 +72,7 @@
             </a>
 
             {{-- Élèves --}}
-            <a href="#"
+            <a href="{{ route('eleves.index') }}"
                 class="sidebar-link {{ request()->routeIs('eleves.*') ? 'active' : '' }} flex items-center gap-3 px-4 py-2.5 rounded-xl text-text-muted text-sm font-medium">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -82,7 +82,7 @@
             </a>
 
             {{-- Matières --}}
-            <a href="#"
+            <a href="{{ route('matieres.index') }}"
                 class="sidebar-link {{ request()->routeIs('matieres.*') ? 'active' : '' }} flex items-center gap-3 px-4 py-2.5 rounded-xl text-text-muted text-sm font-medium">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -92,7 +92,7 @@
             </a>
 
             {{-- Notes --}}
-            <a href="#"
+            <a href="{{ route('compositions.index') }}"
                 class="sidebar-link {{ request()->routeIs('notes.*') ? 'active' : '' }} flex items-center gap-3 px-4 py-2.5 rounded-xl text-text-muted text-sm font-medium">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -102,7 +102,7 @@
             </a>
 
             {{-- Compositions --}}
-            <a href="#"
+            <a href="{{ route('compositions.index') }}"
                 class="sidebar-link {{ request()->routeIs('compositions.*') ? 'active' : '' }} flex items-center gap-3 px-4 py-2.5 rounded-xl text-text-muted text-sm font-medium">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -112,7 +112,7 @@
             </a>
 
             {{-- Bulletins --}}
-            <a href="#"
+            <a href="{{ route('bulletins.index') }}"
                 class="sidebar-link {{ request()->routeIs('bulletins.*') ? 'active' : '' }} flex items-center gap-3 px-4 py-2.5 rounded-xl text-text-muted text-sm font-medium">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -122,7 +122,7 @@
             </a>
 
             {{-- Profil --}}
-            <a href="#"
+            <a href="{{ route('profile.edit') }}"
                 class="sidebar-link {{ request()->routeIs('profile.*') ? 'active' : '' }} flex items-center gap-3 px-4 py-2.5 rounded-xl text-text-muted text-sm font-medium">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -137,7 +137,7 @@
         <div class="px-4 py-4 border-t border-border space-y-2">
 
             {{-- Nouveau bulletin --}}
-            <a href="#"
+            <a href="{{ route('compositions.index') }}"
                 class="flex items-center justify-center gap-2 w-full bg-primary hover:bg-primary-light text-white text-sm font-semibold py-2.5 px-4 rounded-xl transition-colors duration-200">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>

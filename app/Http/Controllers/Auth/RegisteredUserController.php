@@ -53,6 +53,13 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
         Auth::login($user);
+        
+        // Créer automatiquement la classe de l'enseignant
+        \App\Models\Classe::create([
+            'user_id'        => $user->id,
+            'nom'            => $user->niveau_enseignement,
+            'annee_scolaire' => $user->annee_scolaire,
+        ]);
 
         return redirect(route('dashboard', absolute: false));
     }
