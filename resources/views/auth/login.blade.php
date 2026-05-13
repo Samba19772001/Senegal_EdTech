@@ -47,11 +47,12 @@
 
             {{-- Card Header --}}
             <div class="bg-primary px-8 py-6">
-                <h2 class="text-white text-xl font-semibold">Bon retour 👋</h2>
+                <h2 class="text-white text-xl font-semibold">Bon retour</h2>
                 <p class="text-blue-200 text-sm mt-1">Connectez-vous à votre espace enseignant</p>
             </div>
 
-            <form class="px-8 py-8 space-y-5">
+            <form method="POST" action="{{ route('login') }}" class="px-8 py-8 space-y-5">
+                @csrf
 
                 {{-- Session erreur --}}
                 @if (session('status'))
