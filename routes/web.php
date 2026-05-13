@@ -21,6 +21,20 @@ Route::middleware('auth')->group(function () {
     Route::get('/matieres', function () {
     return view('matieres.index');
 })->name('matieres.index');
+    Route::get('/compositions', function () {
+    return view('compositions.index');
+})->name('compositions.index');
 });
+
+Route::get('/compositions/notes', function () {
+    return view('compositions.notes');
+})->name('compositions.notes');
+
+
+Route::get('/bulletins', function () {
+    return view('bulletins.index');
+})->name('bulletins.index');
+
+
 
 require __DIR__.'/auth.php';
