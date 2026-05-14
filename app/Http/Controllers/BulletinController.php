@@ -16,19 +16,29 @@ class BulletinController extends Controller
         $this->bulletinService = $bulletinService;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $bulletins = Bulletin::where('user_id', auth()->id())
-            ->with(['eleve', 'composition'])
-            ->orderBy('rang')
-            ->get()
-            ->groupBy('composition_id');
+        $trimestreActif = $request->get('trimestre', 1);
 
-        $compositions = Composition::where('user_id', auth()->id())
-            ->with('classe')
+        $composition = Composition::where('user_id', auth()->id())
+            ->where('trimestre', $trimestreActif)
+            ->with('classe.eleves')
+            ->first();
+
+        $bulletinsComposition = collect();
+
+        if ($composition) {
+            $bulletinsComposition = Bulletin::where('user_id', auth()->id())
+            ->where('composition_id', $composition->id)
+            ->with('eleve')
             ->get();
+        }
 
-        return view('bulletins.index', compact('bulletins', 'compositions'));
+        return view('bulletins.index', compact(
+            'trimestreActif',
+            'composition',
+            'bulletinsComposition'
+        ));
     }
 
     public function generer($compositionId)
