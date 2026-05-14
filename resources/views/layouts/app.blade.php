@@ -92,7 +92,7 @@
             </a>
 
             {{-- Notes --}}
-            <a href="{{ route('compositions.index') }}"
+            <a href="{{ route('notes.index') }}"
                 class="sidebar-link {{ request()->routeIs('notes.*') ? 'active' : '' }} flex items-center gap-3 px-4 py-2.5 rounded-xl text-text-muted text-sm font-medium">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

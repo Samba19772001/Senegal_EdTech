@@ -44,7 +44,7 @@ Route::middleware('auth')->group(function () {
     // Notes
     Route::get('/compositions/{composition}/matieres/{matiere}/notes', [NoteController::class, 'showMatiere'])->name('notes.showMatiere');
     Route::post('/compositions/{composition}/matieres/{matiere}/notes', [NoteController::class, 'storeMatiere'])->name('notes.storeMatiere');
-
+    Route::get('/notes', [NoteController::class, 'index'])->name('notes.index');
     // Bulletins
     Route::get('/bulletins', [BulletinController::class, 'index'])->name('bulletins.index');
     Route::get('/compositions/{composition}/generer', [BulletinController::class, 'generer'])->name('bulletins.generer');
