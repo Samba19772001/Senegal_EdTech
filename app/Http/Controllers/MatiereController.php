@@ -51,7 +51,7 @@ class MatiereController extends Controller
 
         $request->validate([
             'nom'      => ['required', 'string', 'max:100'],
-            'note_sur' => ['required', 'numeric', 'in:10,20,24,40,60'],
+            'note_sur' => ['required', 'numeric', 'in:10,16,20,24,40,60'],
         ]);
 
         $matiere->update($request->only(['nom', 'note_sur']));

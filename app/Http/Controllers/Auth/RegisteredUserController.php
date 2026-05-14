@@ -53,13 +53,23 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
         Auth::login($user);
-        
-        // Créer automatiquement la classe de l'enseignant
-        \App\Models\Classe::create([
+
+        // Créer automatiquement la classe
+        $classe = \App\Models\Classe::create([
             'user_id'        => $user->id,
             'nom'            => $user->niveau_enseignement,
             'annee_scolaire' => $user->annee_scolaire,
         ]);
+
+        // Créer automatiquement les 3 compositions
+        foreach ([1, 2, 3] as $trimestre) {
+            \App\Models\Composition::create([
+                'user_id'   => $user->id,
+                'classe_id' => $classe->id,
+                'trimestre' => $trimestre,
+                'libelle'   => 'Composition T' . $trimestre,
+            ]);
+        }
 
         return redirect(route('dashboard', absolute: false));
     }

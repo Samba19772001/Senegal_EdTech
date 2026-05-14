@@ -140,6 +140,7 @@
                         <option value="">Sélectionner...</option>
                         <option value="10">10 points</option>
                         <option value="20">20 points</option>
+                        <option value="16">16 points</option>
                         <option value="24">24 points</option>
                         <option value="40">40 points</option>
                         <option value="60">60 points</option>

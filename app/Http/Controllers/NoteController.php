@@ -12,21 +12,27 @@ class NoteController extends Controller
     public function showMatiere($compositionId, $matiereId)
     {
         $composition = Composition::where('user_id', auth()->id())
-            ->with('classe.eleves')
+            ->with(['classe.eleves', 'notes'])
             ->findOrFail($compositionId);
 
         $matiere = Matiere::findOrFail($matiereId);
         $eleves  = $composition->classe->eleves;
+        $niveau  = $composition->classe->nom;
+
+        $matieres = Matiere::where(function($q) use ($niveau) {
+            $q->where('is_default', true)->where('classe_niveau', $niveau);
+        })->orWhere(function($q) {
+            $q->where('user_id', auth()->id())->where('is_default', false);
+        })->orderBy('ordre')->get();
 
         $notesExistantes = Note::where('composition_id', $compositionId)
             ->where('matiere_id', $matiereId)
             ->pluck('note', 'eleve_id');
 
         return view('compositions.notes', compact(
-            'composition', 'matiere', 'eleves', 'notesExistantes'
+            'composition', 'matiere', 'eleves', 'matieres', 'notesExistantes'
         ));
     }
-
     public function storeMatiere(Request $request, $compositionId, $matiereId)
     {
         $composition = Composition::where('user_id', auth()->id())
