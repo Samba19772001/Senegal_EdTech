@@ -149,61 +149,52 @@
             <div class="bg-white rounded-2xl border border-border shadow-sm overflow-hidden">
                 <div class="flex items-center justify-between px-6 py-4 border-b border-border">
                     <h2 class="text-base font-bold text-text-dark">Dernières Activités</h2>
-                    <a href="#" class="text-sm text-primary font-medium hover:underline">Voir tout</a>
+                    <a href="{{ route('notes.index') }}" class="text-sm text-primary font-medium hover:underline">Voir tout</a>
                 </div>
                 <table class="w-full">
                     <thead>
                         <tr class="bg-primary-bg">
                             <th class="text-left px-6 py-3 text-xs font-semibold text-text-muted uppercase tracking-widest">Élève</th>
                             <th class="text-left px-6 py-3 text-xs font-semibold text-text-muted uppercase tracking-widest">Matière</th>
-                            <th class="text-left px-6 py-3 text-xs font-semibold text-text-muted uppercase tracking-widest">Type</th>
+                            <th class="text-left px-6 py-3 text-xs font-semibold text-text-muted uppercase tracking-widest">Trimestre</th>
                             <th class="text-left px-6 py-3 text-xs font-semibold text-text-muted uppercase tracking-widest">Note</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-border">
+                        @forelse($dernieresNotes as $note)
+                        @php
+                            $initiales = strtoupper(substr($note->eleve->prenom, 0, 1) . substr($note->eleve->nom, 0, 1));
+                            $couleurs = ['blue', 'pink', 'orange', 'purple', 'green', 'red', 'indigo', 'amber'];
+                            $couleur = $couleurs[$note->eleve->id % count($couleurs)];
+                            $noteRamenee = number_format($note->note * 10 / $note->matiere->note_sur, 2);
+                        @endphp
                         <tr class="hover:bg-bg-page transition-colors">
                             <td class="px-6 py-3.5">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center">MS</div>
-                                    <span class="text-sm font-medium text-text-dark">Moussa Sow</span>
+                                    <div class="w-8 h-8 rounded-full bg-{{ $couleur }}-100 text-{{ $couleur }}-700 text-xs font-bold flex items-center justify-center">
+                                        {{ $initiales }}
+                                    </div>
+                                    <span class="text-sm font-medium text-text-dark">{{ $note->eleve->prenom }} {{ $note->eleve->nom }}</span>
                                 </div>
                             </td>
-                            <td class="px-6 py-3.5 text-sm text-text-muted">Mathématiques</td>
+                            <td class="px-6 py-3.5 text-sm text-text-muted">{{ $note->matiere->nom }}</td>
                             <td class="px-6 py-3.5">
-                                <span class="text-xs font-semibold bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full">Composition</span>
+                                <span class="text-xs font-semibold bg-primary-bg text-primary px-2.5 py-1 rounded-full">
+                                    T{{ $note->composition->trimestre }}
+                                </span>
                             </td>
-                            <td class="px-6 py-3.5 text-sm font-bold text-primary">16/20</td>
+                            <td class="px-6 py-3.5 text-sm font-bold text-primary">{{ $noteRamenee }}/10</td>
                         </tr>
-                        <tr class="hover:bg-bg-page transition-colors">
-                            <td class="px-6 py-3.5">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded-full bg-purple-100 text-purple-700 text-xs font-bold flex items-center justify-center">AF</div>
-                                    <span class="text-sm font-medium text-text-dark">Awa Fall</span>
-                                </div>
+                        @empty
+                        <tr>
+                            <td colspan="4" class="px-6 py-8 text-center text-text-muted text-sm">
+                                Aucune note saisie pour l'instant
                             </td>
-                            <td class="px-6 py-3.5 text-sm text-text-muted">Français</td>
-                            <td class="px-6 py-3.5">
-                                <span class="text-xs font-semibold bg-green-50 text-green-700 px-2.5 py-1 rounded-full">Composition</span>
-                            </td>
-                            <td class="px-6 py-3.5 text-sm font-bold text-primary">14.5/20</td>
                         </tr>
-                        <tr class="hover:bg-bg-page transition-colors">
-                            <td class="px-6 py-3.5">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded-full bg-orange-100 text-orange-700 text-xs font-bold flex items-center justify-center">ID</div>
-                                    <span class="text-sm font-medium text-text-dark">Ibrahim Diallo</span>
-                                </div>
-                            </td>
-                            <td class="px-6 py-3.5 text-sm text-text-muted">Histoire-Géo</td>
-                            <td class="px-6 py-3.5">
-                                <span class="text-xs font-semibold bg-amber-50 text-amber-700 px-2.5 py-1 rounded-full">Composition</span>
-                            </td>
-                            <td class="px-6 py-3.5 text-sm font-bold text-primary">18/20</td>
-                        </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
-
         </div>
 
         {{-- Droite : Performance + Présence --}}
