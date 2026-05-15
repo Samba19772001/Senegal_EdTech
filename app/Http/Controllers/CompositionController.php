@@ -12,14 +12,58 @@ class CompositionController extends Controller
     public function index()
     {
         $compositions = Composition::where('user_id', auth()->id())
-            ->with('classe')
+            ->with(['classe', 'notes'])
             ->orderBy('trimestre')
             ->get()
             ->groupBy('trimestre');
 
         $classes = Classe::where('user_id', auth()->id())->get();
 
-        return view('compositions.index', compact('compositions', 'classes'));
+        $statsCompositions = [];
+
+        foreach ($compositions->flatten() as $composition) {
+            $niveau = $composition->classe->nom;
+
+            $matieres = Matiere::where(function ($q) use ($niveau) {
+                $q->where('is_default', true)->where('classe_niveau', $niveau);
+            })->orWhere(function ($q) {
+                $q->where('user_id', auth()->id())->where('is_default', false);
+            })->get();
+
+            $eleves   = $composition->classe->eleves;
+            $nbEleves = $eleves->count();
+            $nbMatieres = $matieres->count();
+
+            // Matière saisie = toutes les lignes existent (note OU null)
+            $matieresSaisies = $nbEleves > 0
+                ? $matieres->filter(function ($m) use ($composition, $nbEleves) {
+                    return $composition->notes->where('matiere_id', $m->id)->count() >= $nbEleves;
+                })->count()
+                : 0;
+
+            // Progression = matières entièrement traitées / total matières
+            $progression = $nbMatieres > 0
+                ? round($matieresSaisies / $nbMatieres * 100)
+                : 0;
+
+            // Complet = toutes les matières ont une ligne pour chaque élève (NULL inclus)
+            $estComplet = $nbMatieres > 0 && $matieresSaisies >= $nbMatieres;
+
+            // Bulletin bloqué si pas complet — même comportement qu'avant
+            $peutGenererBulletin = $estComplet;
+
+            $statsCompositions[$composition->id] = [
+                'matieres'            => $matieres,
+                'nbEleves'            => $nbEleves,
+                'nbMatieres'          => $nbMatieres,
+                'progression'         => $progression,
+                'matieresSaisies'     => $matieresSaisies,
+                'peutGenererBulletin' => $peutGenererBulletin,
+                'estComplet'          => $estComplet,
+            ];
+        }
+
+        return view('compositions.index', compact('compositions', 'classes', 'statsCompositions'));
     }
 
     public function store(Request $request)
@@ -31,7 +75,6 @@ class CompositionController extends Controller
             'date_composition' => ['nullable', 'date'],
         ]);
 
-        // Vérifier unicité classe + trimestre
         $existe = Composition::where('classe_id', $request->classe_id)
             ->where('trimestre', $request->trimestre)
             ->exists();
@@ -61,9 +104,9 @@ class CompositionController extends Controller
 
         $niveau = $composition->classe->nom;
 
-        $matieres = Matiere::where(function($q) use ($niveau) {
+        $matieres = Matiere::where(function ($q) use ($niveau) {
             $q->where('is_default', true)->where('classe_niveau', $niveau);
-        })->orWhere(function($q) {
+        })->orWhere(function ($q) {
             $q->where('user_id', auth()->id())->where('is_default', false);
         })->orderBy('ordre')->get();
 

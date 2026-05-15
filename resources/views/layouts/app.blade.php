@@ -53,7 +53,7 @@
                 </div>
                 <div>
                     <p class="text-text-dark font-bold text-sm leading-tight">Senegal EdTech</p>
-                    <p class="text-text-muted text-xs">Primary Education Portal</p>
+                    <p class="text-text-muted text-xs">Portail de l’enseignement primaire</p>
                 </div>
             </div>
         </div>

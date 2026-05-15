@@ -25,14 +25,18 @@ class NoteController extends Controller
             $q->where('user_id', auth()->id())->where('is_default', false);
         })->orderBy('ordre')->get();
 
+        // On récupère toutes les lignes (y compris note = NULL)
         $notesExistantes = Note::where('composition_id', $compositionId)
             ->where('matiere_id', $matiereId)
-            ->pluck('note', 'eleve_id');
+            ->get()
+            ->keyBy('eleve_id')
+            ->map(fn($n) => $n->note); // NULL si absent, valeur sinon
 
         return view('compositions.notes', compact(
             'composition', 'matiere', 'eleves', 'matieres', 'notesExistantes'
         ));
     }
+
     public function storeMatiere(Request $request, $compositionId, $matiereId)
     {
         $composition = Composition::where('user_id', auth()->id())
@@ -45,20 +49,21 @@ class NoteController extends Controller
             'notes.*' => ['nullable', 'numeric', 'min:0', 'max:' . $matiere->note_sur],
         ]);
 
-        foreach ($request->notes as $eleveId => $note) {
-            if ($note !== null && $note !== '') {
-                Note::updateOrCreate(
-                    [
-                        'composition_id' => $compositionId,
-                        'eleve_id'       => $eleveId,
-                        'matiere_id'     => $matiereId,
-                    ],
-                    [
-                        'user_id' => auth()->id(),
-                        'note'    => $note,
-                    ]
-                );
-            }
+        foreach ($request->notes as $eleveId => $valeur) {
+            // On enregistre TOUJOURS une ligne :
+            // - valeur numérique → note normale
+            // - champ vide → note = NULL (absent volontaire, "—")
+            Note::updateOrCreate(
+                [
+                    'composition_id' => $compositionId,
+                    'eleve_id'       => $eleveId,
+                    'matiere_id'     => $matiereId,
+                ],
+                [
+                    'user_id' => auth()->id(),
+                    'note'    => ($valeur !== '' && $valeur !== null) ? $valeur : null,
+                ]
+            );
         }
 
         // Passer à la matière suivante
@@ -69,7 +74,7 @@ class NoteController extends Controller
             $q->where('user_id', auth()->id())->where('is_default', false);
         })->orderBy('ordre')->pluck('id')->toArray();
 
-        $indexActuel = array_search($matiereId, $matieres);
+        $indexActuel   = array_search($matiereId, $matieres);
         $prochainIndex = $indexActuel + 1;
 
         if ($prochainIndex < count($matieres)) {
@@ -81,6 +86,7 @@ class NoteController extends Controller
         return redirect()->route('compositions.index')
             ->with('success', 'Toutes les notes ont été saisies !');
     }
+
     public function index(Request $request)
     {
         $user   = auth()->user();
@@ -111,8 +117,12 @@ class NoteController extends Controller
 
         $notes = $query->paginate(20);
 
-        // Calculer moyenne générale sur 10
-        $toutesNotes = Note::where('user_id', $user->id)->with('matiere')->get();
+        // Moyenne sur les notes non-NULL uniquement
+        $toutesNotes = Note::where('user_id', $user->id)
+            ->whereNotNull('note')
+            ->with('matiere')
+            ->get();
+
         $moyenneGenerale = '—';
         if ($toutesNotes->count() > 0) {
             $total = $toutesNotes->sum(fn($n) => $n->note * 10 / $n->matiere->note_sur);

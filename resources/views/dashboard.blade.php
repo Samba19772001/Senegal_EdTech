@@ -78,11 +78,9 @@
         <div class="col-span-2 space-y-5">
 
             {{-- Actions Rapides --}}
-            <div class="bg-white rounded-2xl border border-border p-6 shadow-sm">
-                <h2 class="text-base font-bold text-text-dark mb-4">Actions Rapides</h2>
-                <div class="grid grid-cols-2 gap-3">
+            <div class="grid grid-cols-2 gap-3">
 
-                    <a href="#" class="flex items-center justify-between bg-primary hover:bg-primary-light text-white px-5 py-4 rounded-xl transition-colors duration-200">
+                    <a href="{{ route('eleves.index') }}" class="flex items-center justify-between bg-primary hover:bg-primary-light text-white px-5 py-4 rounded-xl transition-colors duration-200">
                         <div class="flex items-center gap-3">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
@@ -97,7 +95,7 @@
                         </svg>
                     </a>
 
-                    <a href="#" class="flex items-center justify-between bg-white hover:bg-primary-bg border border-border text-text-dark px-5 py-4 rounded-xl transition-colors duration-200">
+                    <a href="{{ route('eleves.index') }}" class="flex items-center justify-between bg-white hover:bg-primary-bg border border-border text-text-dark px-5 py-4 rounded-xl transition-colors duration-200">
                         <div class="flex items-center gap-3">
                             <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
@@ -112,7 +110,7 @@
                         </svg>
                     </a>
 
-                    <a href="#" class="flex items-center justify-between bg-white hover:bg-primary-bg border border-border text-text-dark px-5 py-4 rounded-xl transition-colors duration-200">
+                    <a href="{{ route('compositions.index') }}" class="flex items-center justify-between bg-white hover:bg-primary-bg border border-border text-text-dark px-5 py-4 rounded-xl transition-colors duration-200">
                         <div class="flex items-center gap-3">
                             <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
@@ -127,7 +125,7 @@
                         </svg>
                     </a>
 
-                    <a href="#" class="flex items-center justify-between bg-white hover:bg-primary-bg border border-border text-text-dark px-5 py-4 rounded-xl transition-colors duration-200">
+                    <a href="{{ route('bulletins.index') }}" class="flex items-center justify-between bg-white hover:bg-primary-bg border border-border text-text-dark px-5 py-4 rounded-xl transition-colors duration-200">
                         <div class="flex items-center gap-3">
                             <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
@@ -143,7 +141,6 @@
                     </a>
 
                 </div>
-            </div>
 
             {{-- Dernières Activités --}}
             <div class="bg-white rounded-2xl border border-border shadow-sm overflow-hidden">
@@ -197,55 +194,64 @@
             </div>
         </div>
 
-        {{-- Droite : Performance + Présence --}}
+        {{-- Droite : Stats réelles --}}
         <div class="space-y-5">
 
-            {{-- Performance --}}
+            {{-- Performance Globale --}}
             <div class="bg-primary rounded-2xl p-6 text-white shadow-sm">
                 <h3 class="font-bold text-base mb-1">Performance Globale</h3>
-                <p class="text-blue-200 text-xs mb-5">Moyenne de classe en hausse de 1.2 points par rapport au trimestre précédent.</p>
-                <div class="flex items-end gap-1.5 h-20">
-                    <div class="flex-1 bg-blue-400 bg-opacity-50 rounded-t-md" style="height: 40%"></div>
-                    <div class="flex-1 bg-blue-400 bg-opacity-50 rounded-t-md" style="height: 55%"></div>
-                    <div class="flex-1 bg-blue-400 bg-opacity-50 rounded-t-md" style="height: 45%"></div>
-                    <div class="flex-1 bg-blue-400 bg-opacity-50 rounded-t-md" style="height: 70%"></div>
-                    <div class="flex-1 bg-blue-400 bg-opacity-50 rounded-t-md" style="height: 60%"></div>
-                    <div class="flex-1 bg-white rounded-t-md" style="height: 85%"></div>
+                <p class="text-blue-200 text-xs mb-5">
+                    Moyenne générale de la classe sur tous les trimestres
+                </p>
+                @php
+                    $moyenneGlobale = auth()->user()->bulletins()->avg('moyenne_generale');
+                    $meilleureNote  = auth()->user()->bulletins()->max('moyenne_generale');
+                    $plusFaible     = auth()->user()->bulletins()->min('moyenne_generale');
+                @endphp
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-blue-200 text-xs">Moyenne globale</span>
+                        <span class="text-white font-bold text-lg">
+                            {{ $moyenneGlobale ? number_format($moyenneGlobale, 2) : '—' }}/10
+                        </span>
+                    </div>
+                    <div class="w-full bg-blue-800 rounded-full h-2">
+                        <div class="bg-white h-2 rounded-full"
+                            style="width: {{ $moyenneGlobale ? ($moyenneGlobale * 10) : 0 }}%"></div>
+                    </div>
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="text-blue-200">Meilleure : <b class="text-white">{{ $meilleureNote ? number_format($meilleureNote, 2) : '—' }}</b></span>
+                        <span class="text-blue-200">Plus faible : <b class="text-white">{{ $plusFaible ? number_format($plusFaible, 2) : '—' }}</b></span>
+                    </div>
                 </div>
             </div>
 
-            {{-- Présence --}}
+            {{-- Résumé par trimestre --}}
             <div class="bg-white rounded-2xl border border-border p-6 shadow-sm">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="font-bold text-base text-text-dark">Présence Aujourd'hui</h3>
-                    <span class="text-sm font-bold text-green-600">98%</span>
-                </div>
+                <h3 class="font-bold text-base text-text-dark mb-4">Résumé par trimestre</h3>
                 <div class="space-y-3">
-                    <div class="flex items-center justify-between">
+                    @foreach([1, 2, 3] as $t)
+                    @php
+                        $comp = auth()->user()->compositions()->where('trimestre', $t)->first();
+                        $moy  = $comp ? \App\Models\Bulletin::where('composition_id', $comp->id)->avg('moyenne_generale') : null;
+                        $nb   = $comp ? \App\Models\Bulletin::where('composition_id', $comp->id)->count() : 0;
+                    @endphp
+                    <div class="flex items-center justify-between py-2 border-b border-border last:border-0">
                         <div class="flex items-center gap-2">
-                            <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
-                            <span class="text-sm text-text-muted">Présents</span>
+                            <div class="w-2.5 h-2.5 rounded-full {{ $moy ? 'bg-green-500' : 'bg-gray-300' }}"></div>
+                            <span class="text-sm text-text-muted">Trimestre {{ $t }}</span>
                         </div>
-                        <span class="text-sm font-bold text-text-dark">41</span>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-2">
-                            <div class="w-2.5 h-2.5 rounded-full bg-red-500"></div>
-                            <span class="text-sm text-text-muted">Absents</span>
+                        <div class="flex items-center gap-3">
+                            @if($moy)
+                                <span class="text-xs text-text-muted">{{ $nb }} bulletins</span>
+                                <span class="text-sm font-bold text-primary">{{ number_format($moy, 2) }}/10</span>
+                            @else
+                                <span class="text-xs text-gray-400">Non commencé</span>
+                            @endif
                         </div>
-                        <span class="text-sm font-bold text-text-dark">1</span>
                     </div>
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-2">
-                            <div class="w-2.5 h-2.5 rounded-full bg-amber-500"></div>
-                            <span class="text-sm text-text-muted">Retards</span>
-                        </div>
-                        <span class="text-sm font-bold text-text-dark">2</span>
-                    </div>
+                    @endforeach
                 </div>
-                <button class="w-full mt-4 border border-border text-text-muted text-sm py-2 rounded-xl hover:bg-primary-bg hover:text-primary transition-colors">
-                    Faire l'appel
-                </button>
             </div>
 
             {{-- Citation --}}
