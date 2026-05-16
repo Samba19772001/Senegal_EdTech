@@ -8,7 +8,9 @@ use App\Http\Controllers\MatiereController;
 use App\Http\Controllers\CompositionController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\BulletinController;
+use App\Http\Controllers\ParametreController;
 use Illuminate\Support\Facades\Route;
+
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -26,6 +28,7 @@ Route::middleware('auth')->group(function () {
     // Élèves
     Route::get('/eleves', [EleveController::class, 'index'])->name('eleves.index');
     Route::post('/eleves', [EleveController::class, 'store'])->name('eleves.store');
+    Route::delete('/eleves/destroy-all', [EleveController::class, 'destroyAll'])->name('eleves.destroyAll');
     Route::put('/eleves/{id}', [EleveController::class, 'update'])->name('eleves.update');
     Route::delete('/eleves/{id}', [EleveController::class, 'destroy'])->name('eleves.destroy');
     Route::post('/eleves/import', [EleveController::class, 'import'])->name('eleves.import');
@@ -54,6 +57,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    //Paramètres
+    Route::get('/parametres', [ParametreController::class, 'index'])->name('parametres.index');
+    Route::put('/parametres', [ParametreController::class, 'update'])->name('parametres.update');
 });
 
 require __DIR__.'/auth.php';

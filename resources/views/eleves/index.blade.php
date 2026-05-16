@@ -10,6 +10,18 @@
     <div class="flex items-center justify-between mb-6">
         <p class="text-text-muted text-sm">Liste de tous vos élèves inscrits</p>
         <div class="flex items-center gap-3">
+            {{-- Effacer tous les élèves --}}
+            <form method="POST" action="{{ route('eleves.destroyAll') }}"
+                onsubmit="return confirm('⚠️ Attention ! Ceci supprimera TOUS vos élèves et leurs notes. Cette action est irréversible. Continuer ?')">
+                @csrf @method('DELETE')
+                <button type="submit"
+                    class="flex items-center gap-2 px-4 py-2.5 border border-red-200 text-red-500 hover:bg-red-50 rounded-xl text-sm font-medium transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                    Effacer tous
+                </button>
+            </form>
             <button onclick="ouvrirModalImport()"
                 class="flex items-center gap-2 px-4 py-2.5 border border-border rounded-xl text-sm font-medium text-text-muted hover:bg-primary-bg hover:text-primary transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

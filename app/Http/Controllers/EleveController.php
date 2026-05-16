@@ -13,7 +13,10 @@ class EleveController extends Controller
     public function index(Request $request)
     {
         $classes = Classe::where('user_id', auth()->id())->get();
-        $query   = Eleve::where('user_id', auth()->id())->with('classe');
+        $query   = Eleve::where('user_id', auth()->id())
+            ->with('classe')
+            ->orderBy('nom')
+            ->orderBy('prenom');
 
         if ($request->classe_id) {
             $query->where('classe_id', $request->classe_id);
@@ -36,6 +39,7 @@ class EleveController extends Controller
         return view('eleves.index', compact(
             'eleves', 'classes', 'totalGarcons', 'totalFilles'
         ));
+        
     }
 
     public function store(Request $request)
@@ -101,5 +105,22 @@ class EleveController extends Controller
         );
 
         return redirect()->back()->with('success', 'Élèves importés avec succès.');
+    }
+
+    public function destroyAll()
+    {
+        $user = auth()->user();
+
+        // Supprimer les notes liées
+        \App\Models\Note::where('user_id', $user->id)->delete();
+
+        // Supprimer les bulletins liés
+        \App\Models\Bulletin::where('user_id', $user->id)->delete();
+
+        // Supprimer tous les élèves
+        \App\Models\Eleve::where('user_id', $user->id)->delete();
+
+        return redirect()->route('eleves.index')
+            ->with('success', 'Tous les élèves ont été supprimés avec succès.');
     }
 }

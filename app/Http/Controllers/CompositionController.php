@@ -11,13 +11,20 @@ class CompositionController extends Controller
 {
     public function index()
     {
+        // Récupérer uniquement la classe active (dernière créée)
+        $classeActive = \App\Models\Classe::where('user_id', auth()->id())
+            ->where('annee_scolaire', auth()->user()->annee_scolaire)
+            ->latest()
+            ->first();
+
         $compositions = Composition::where('user_id', auth()->id())
+            ->where('classe_id', $classeActive?->id)
             ->with(['classe', 'notes'])
             ->orderBy('trimestre')
             ->get()
             ->groupBy('trimestre');
 
-        $classes = Classe::where('user_id', auth()->id())->get();
+        $classes = \App\Models\Classe::where('user_id', auth()->id())->get();
 
         $statsCompositions = [];
 
@@ -26,9 +33,11 @@ class CompositionController extends Controller
 
             $matieres = Matiere::where(function ($q) use ($niveau) {
                 $q->where('is_default', true)->where('classe_niveau', $niveau);
-            })->orWhere(function ($q) {
-                $q->where('user_id', auth()->id())->where('is_default', false);
-            })->get();
+            })->orWhere(function ($q) use ($niveau) {
+                $q->where('user_id', auth()->id())
+                ->where('is_default', false)
+                ->where('classe_niveau', $niveau);
+            })->orderBy('ordre')->get();
 
             $eleves   = $composition->classe->eleves;
             $nbEleves = $eleves->count();
@@ -106,8 +115,10 @@ class CompositionController extends Controller
 
         $matieres = Matiere::where(function ($q) use ($niveau) {
             $q->where('is_default', true)->where('classe_niveau', $niveau);
-        })->orWhere(function ($q) {
-            $q->where('user_id', auth()->id())->where('is_default', false);
+        })->orWhere(function ($q) use ($niveau) {
+            $q->where('user_id', auth()->id())
+            ->where('is_default', false)
+            ->where('classe_niveau', $niveau);
         })->orderBy('ordre')->get();
 
         $eleves = $composition->classe->eleves;

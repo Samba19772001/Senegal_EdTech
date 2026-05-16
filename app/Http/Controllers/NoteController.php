@@ -21,8 +21,10 @@ class NoteController extends Controller
 
         $matieres = Matiere::where(function($q) use ($niveau) {
             $q->where('is_default', true)->where('classe_niveau', $niveau);
-        })->orWhere(function($q) {
-            $q->where('user_id', auth()->id())->where('is_default', false);
+        })->orWhere(function($q) use ($niveau) {
+            $q->where('user_id', auth()->id())
+            ->where('is_default', false)
+            ->where('classe_niveau', $niveau);
         })->orderBy('ordre')->get();
 
         // On récupère toutes les lignes (y compris note = NULL)
@@ -31,7 +33,6 @@ class NoteController extends Controller
             ->get()
             ->keyBy('eleve_id')
             ->map(fn($n) => $n->note); // NULL si absent, valeur sinon
-
         return view('compositions.notes', compact(
             'composition', 'matiere', 'eleves', 'matieres', 'notesExistantes'
         ));
@@ -70,9 +71,11 @@ class NoteController extends Controller
         $niveau   = $composition->classe->nom;
         $matieres = Matiere::where(function($q) use ($niveau) {
             $q->where('is_default', true)->where('classe_niveau', $niveau);
-        })->orWhere(function($q) {
-            $q->where('user_id', auth()->id())->where('is_default', false);
-        })->orderBy('ordre')->pluck('id')->toArray();
+        })->orWhere(function($q) use ($niveau) {
+            $q->where('user_id', auth()->id())
+            ->where('is_default', false)
+            ->where('classe_niveau', $niveau);
+        })->orderBy('ordre')->get();
 
         $indexActuel   = array_search($matiereId, $matieres);
         $prochainIndex = $indexActuel + 1;
@@ -94,12 +97,13 @@ class NoteController extends Controller
 
         $compositions = \App\Models\Composition::where('user_id', $user->id)->get();
 
-        $matieres = \App\Models\Matiere::where(function($q) use ($niveau) {
+        $matieres = Matiere::where(function($q) use ($niveau) {
             $q->where('is_default', true)->where('classe_niveau', $niveau);
-        })->orWhere(function($q) use ($user) {
-            $q->where('user_id', $user->id)->where('is_default', false);
+        })->orWhere(function($q) use ($niveau) {
+            $q->where('user_id', auth()->id())
+            ->where('is_default', false)
+            ->where('classe_niveau', $niveau);
         })->orderBy('ordre')->get();
-
         $query = Note::where('notes.user_id', $user->id)
             ->join('matieres', 'notes.matiere_id', '=', 'matieres.id')
             ->join('compositions', 'notes.composition_id', '=', 'compositions.id')
