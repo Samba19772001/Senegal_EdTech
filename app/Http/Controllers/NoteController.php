@@ -16,23 +16,27 @@ class NoteController extends Controller
             ->findOrFail($compositionId);
 
         $matiere = Matiere::findOrFail($matiereId);
-        $eleves  = $composition->classe->eleves;
-        $niveau  = $composition->classe->nom;
+
+        // ✅ niveau depuis le user, pas le nom de classe
+        $niveau = auth()->user()->niveau_enseignement;
+
+        // ✅ élèves uniquement de la classe de cette composition
+        $eleves = $composition->classe->eleves;
 
         $matieres = Matiere::where(function($q) use ($niveau) {
             $q->where('is_default', true)->where('classe_niveau', $niveau);
         })->orWhere(function($q) use ($niveau) {
             $q->where('user_id', auth()->id())
-            ->where('is_default', false)
-            ->where('classe_niveau', $niveau);
+              ->where('is_default', false)
+              ->where('classe_niveau', $niveau);
         })->orderBy('ordre')->get();
 
-        // On récupère toutes les lignes (y compris note = NULL)
         $notesExistantes = Note::where('composition_id', $compositionId)
             ->where('matiere_id', $matiereId)
             ->get()
             ->keyBy('eleve_id')
-            ->map(fn($n) => $n->note); // NULL si absent, valeur sinon
+            ->map(fn($n) => $n->note);
+
         return view('compositions.notes', compact(
             'composition', 'matiere', 'eleves', 'matieres', 'notesExistantes'
         ));
@@ -51,9 +55,6 @@ class NoteController extends Controller
         ]);
 
         foreach ($request->notes as $eleveId => $valeur) {
-            // On enregistre TOUJOURS une ligne :
-            // - valeur numérique → note normale
-            // - champ vide → note = NULL (absent volontaire, "—")
             Note::updateOrCreate(
                 [
                     'composition_id' => $compositionId,
@@ -67,17 +68,18 @@ class NoteController extends Controller
             );
         }
 
-        // Passer à la matière suivante
-        $niveau   = $composition->classe->nom;
+        // ✅ niveau depuis le user
+        $niveau = auth()->user()->niveau_enseignement;
+
         $matieres = Matiere::where(function($q) use ($niveau) {
             $q->where('is_default', true)->where('classe_niveau', $niveau);
         })->orWhere(function($q) use ($niveau) {
             $q->where('user_id', auth()->id())
-            ->where('is_default', false)
-            ->where('classe_niveau', $niveau);
-        })->orderBy('ordre')->get();
+              ->where('is_default', false)
+              ->where('classe_niveau', $niveau);
+        })->orderBy('ordre')->pluck('id')->toArray();
 
-        $indexActuel   = array_search($matiereId, $matieres);
+        $indexActuel   = array_search((int)$matiereId, $matieres);
         $prochainIndex = $indexActuel + 1;
 
         if ($prochainIndex < count($matieres)) {
@@ -101,9 +103,10 @@ class NoteController extends Controller
             $q->where('is_default', true)->where('classe_niveau', $niveau);
         })->orWhere(function($q) use ($niveau) {
             $q->where('user_id', auth()->id())
-            ->where('is_default', false)
-            ->where('classe_niveau', $niveau);
+              ->where('is_default', false)
+              ->where('classe_niveau', $niveau);
         })->orderBy('ordre')->get();
+
         $query = Note::where('notes.user_id', $user->id)
             ->join('matieres', 'notes.matiere_id', '=', 'matieres.id')
             ->join('compositions', 'notes.composition_id', '=', 'compositions.id')
@@ -121,7 +124,6 @@ class NoteController extends Controller
 
         $notes = $query->paginate(20);
 
-        // Moyenne sur les notes non-NULL uniquement
         $toutesNotes = Note::where('user_id', $user->id)
             ->whereNotNull('note')
             ->with('matiere')

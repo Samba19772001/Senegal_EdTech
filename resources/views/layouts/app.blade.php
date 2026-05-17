@@ -136,13 +136,14 @@
         {{-- Bas de sidebar --}}
         <div class="px-4 py-4 border-t border-border space-y-2">
 
-            {{-- Nouveau bulletin --}}
-            <a href="{{ route('compositions.index') }}"
-                class="flex items-center justify-center gap-2 w-full bg-primary hover:bg-primary-light text-white text-sm font-semibold py-2.5 px-4 rounded-xl transition-colors duration-200">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            {{-- À propos --}}
+            <a href="{{ route('apropos.index') }}"
+                class="sidebar-link {{ request()->routeIs('apropos.*') ? 'active' : '' }} flex items-center gap-3 px-4 py-2.5 rounded-xl text-text-muted text-sm font-medium">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
-                nouveau bulletin scolaire
+                À propos
             </a>
 
             {{-- Settings --}}
@@ -189,31 +190,187 @@
             {{-- Droite header --}}
             <div class="flex items-center gap-4">
 
-                {{-- Recherche --}}
-                <div class="relative">
-                    <svg class="w-4 h-4 text-text-muted absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {{-- Recherche avec suggestions --}}
+                <div class="relative" id="search-container">
+                    <svg class="w-4 h-4 text-text-muted absolute left-3 top-1/2 -translate-y-1/2 z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                     </svg>
-                    <input type="text" placeholder="Rechercher..."
+                    <input type="text" id="search-input" placeholder="Rechercher un élève..."
+                        autocomplete="off"
                         class="pl-9 pr-4 py-2 border border-border rounded-xl text-sm bg-bg-page text-text-dark placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary w-56"/>
+
+                    {{-- Dropdown suggestions --}}
+                    <div id="search-results"
+                        class="absolute top-full left-0 mt-1 w-72 bg-white border border-border rounded-xl shadow-lg z-50 hidden overflow-hidden">
+                        <div id="search-list"></div>
+                    </div>
                 </div>
 
                 {{-- Notif --}}
-                <button class="relative w-9 h-9 flex items-center justify-center rounded-xl border border-border bg-bg-page hover:bg-primary-bg transition-colors">
-                    <svg class="w-5 h-5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
-                    </svg>
-                    <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
-                </button>
+                <div class="relative" id="notif-container">
+                    <button onclick="toggleNotif()"
+                        class="relative w-9 h-9 flex items-center justify-center rounded-xl border border-border bg-bg-page hover:bg-primary-bg transition-colors">
+                        <svg class="w-5 h-5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                        </svg>
+                        @php
+                            $alertes = [];
+                            $user    = auth()->user();
+                            $niveau  = $user->niveau_enseignement; // ✅ CP, CE1... pas "CP A"
+
+                            $classeActive = $user->classes()
+                                ->where('annee_scolaire', $user->annee_scolaire)
+                                ->latest()->first();
+
+                            if ($classeActive) {
+                                $compositions = \App\Models\Composition::where('user_id', $user->id)
+                                    ->where('classe_id', $classeActive->id)
+                                    ->with(['notes', 'classe.eleves'])
+                                    ->get();
+
+                                // Calculer nbMatieres une seule fois avec le bon niveau
+                                $nbMatieres = \App\Models\Matiere::where(function($q) use ($niveau) {
+                                    $q->where('is_default', true)->where('classe_niveau', $niveau);
+                                })->orWhere(function($q) use ($niveau) {
+                                    $q->where('user_id', auth()->id())
+                                    ->where('is_default', false)
+                                    ->where('classe_niveau', $niveau);
+                                })->count();
+
+                                foreach ($compositions as $comp) {
+                                    $nbEleves       = $comp->classe->eleves->count();
+                                    $notesCount     = $comp->notes->count();
+                                    $notesAttendues = $nbMatieres * $nbEleves;
+
+                                    // Alerte notes incomplètes
+                                    if ($nbEleves > 0 && $notesCount < $notesAttendues) {
+                                        $alertes[] = [
+                                            'type'    => 'warning',
+                                            'message' => "Composition T{$comp->trimestre} : notes incomplètes ({$notesCount}/{$notesAttendues})",
+                                            'lien'    => route('compositions.index'),
+                                        ];
+                                    }
+
+                                    // Alerte bulletins non générés
+                                    $bulletinsCount = \App\Models\Bulletin::where('composition_id', $comp->id)->count();
+                                    if ($nbEleves > 0 && $notesCount >= $notesAttendues && $bulletinsCount == 0) {
+                                        $alertes[] = [
+                                            'type'    => 'info',
+                                            'message' => "Composition T{$comp->trimestre} complète — bulletins non encore générés.",
+                                            'lien'    => route('bulletins.generer', $comp->id),
+                                        ];
+                                    }
+                                }
+
+                                // Alerte aucun élève
+                                if (\App\Models\Eleve::where('user_id', $user->id)->count() == 0) {
+                                    $alertes[] = [
+                                        'type'    => 'info',
+                                        'message' => 'Aucun élève enregistré. Ajoutez vos élèves pour commencer.',
+                                        'lien'    => route('eleves.index'),
+                                    ];
+                                }
+                            }
+                        @endphp
+
+                        @if(count($alertes) > 0)
+                            <span class="absolute top-1 right-1 w-4 h-4 bg-red-500 rounded-full text-white text-xs flex items-center justify-center font-bold">
+                                {{ count($alertes) }}
+                            </span>
+                        @endif
+                    </button>
+
+                    {{-- Dropdown notifications --}}
+                    <div id="notif-dropdown"
+                        class="hidden absolute right-0 top-full mt-2 w-80 bg-white border border-border rounded-2xl shadow-xl z-50 overflow-hidden">
+                        <div class="px-4 py-3 border-b border-border flex items-center justify-between">
+                            <h3 class="font-bold text-text-dark text-sm">Alertes</h3>
+                            @if(count($alertes) > 0)
+                                <span class="text-xs font-semibold bg-red-50 text-red-600 px-2 py-0.5 rounded-full">
+                                    {{ count($alertes) }} alerte(s)
+                                </span>
+                            @endif
+                        </div>
+                        <div class="max-h-72 overflow-y-auto">
+                            @forelse($alertes as $alerte)
+                            <a href="{{ $alerte['lien'] }}"
+                                class="flex items-start gap-3 px-4 py-3 hover:bg-bg-page transition-colors border-b border-border last:border-0">
+                                <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5
+                                    {{ $alerte['type'] == 'warning' ? 'bg-amber-50' : 'bg-blue-50' }}">
+                                    @if($alerte['type'] == 'warning')
+                                        <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
+                                    @else
+                                        <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
+                                    @endif
+                                </div>
+                                <p class="text-xs text-text-muted leading-relaxed">{{ $alerte['message'] }}</p>
+                            </a>
+                            @empty
+                            <div class="px-4 py-8 text-center">
+                                <svg class="w-10 h-10 text-gray-200 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <p class="text-sm font-medium text-text-dark">Tout est à jour !</p>
+                                <p class="text-xs text-text-muted mt-1">Aucune alerte pour le moment</p>
+                            </div>
+                            @endforelse
+                        </div>
+                    </div>
+                </div>
 
                 {{-- Aide --}}
-                <button class="w-9 h-9 flex items-center justify-center rounded-xl border border-border bg-bg-page hover:bg-primary-bg transition-colors">
-                    <svg class="w-5 h-5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                </button>
+                <div class="relative" id="aide-container">
+                    <button onclick="toggleAide()"
+                        class="w-9 h-9 flex items-center justify-center rounded-xl border border-border bg-bg-page hover:bg-primary-bg transition-colors">
+                        <svg class="w-5 h-5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </button>
+
+                    {{-- Dropdown aide --}}
+                    <div id="aide-dropdown"
+                        class="hidden absolute right-0 top-full mt-2 w-80 bg-white border border-border rounded-2xl shadow-xl z-50 overflow-hidden">
+                        <div class="px-4 py-3 border-b border-border">
+                            <h3 class="font-bold text-text-dark text-sm">Guide rapide</h3>
+                            <p class="text-xs text-text-muted mt-0.5">Comment utiliser la plateforme</p>
+                        </div>
+                        <div class="p-4 space-y-3">
+                            @foreach([
+                                ['1', 'Ajouter vos élèves', 'Allez dans Élèves → Ajouter ou Importer Excel', 'eleves.index', 'text-blue-600 bg-blue-50'],
+                                ['2', 'Configurer les matières', 'Vérifiez les matières dans Matières (déjà configurées)', 'matieres.index', 'text-green-600 bg-green-50'],
+                                ['3', 'Saisir les notes', 'Allez dans Compositions → Saisir notes par matière', 'compositions.index', 'text-amber-600 bg-amber-50'],
+                                ['4', 'Générer les bulletins', 'Une fois les notes saisies → Bulletins PDF', 'bulletins.index', 'text-purple-600 bg-purple-50'],
+                            ] as $step)
+                            <a href="{{ route($step[3]) }}"
+                                class="flex items-start gap-3 p-3 rounded-xl hover:bg-bg-page transition-colors border border-border">
+                                <div class="w-7 h-7 rounded-full {{ $step[4] }} flex items-center justify-center flex-shrink-0 text-xs font-bold">
+                                    {{ $step[0] }}
+                                </div>
+                                <div>
+                                    <p class="text-sm font-semibold text-text-dark">{{ $step[1] }}</p>
+                                    <p class="text-xs text-text-muted mt-0.5">{{ $step[2] }}</p>
+                                </div>
+                            </a>
+                            @endforeach
+
+                            <div class="pt-2 border-t border-border">
+                                <a href="{{ route('apropos.index') }}"
+                                    class="flex items-center justify-center gap-2 w-full py-2 bg-primary-bg text-primary rounded-xl text-sm font-medium hover:bg-primary hover:text-white transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    En savoir plus
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 {{-- Avatar --}}
                 <div class="flex items-center gap-2.5">
@@ -240,5 +397,86 @@
 </div>
 
 @stack('scripts')
+
+<script>
+const searchInput  = document.getElementById('search-input');
+const searchResults = document.getElementById('search-results');
+const searchList   = document.getElementById('search-list');
+
+let debounceTimer;
+
+searchInput.addEventListener('input', function () {
+    clearTimeout(debounceTimer);
+    const query = this.value.trim();
+
+    if (query.length < 2) {
+        searchResults.classList.add('hidden');
+        return;
+    }
+
+    debounceTimer = setTimeout(() => {
+        fetch(`/search-eleves?q=${encodeURIComponent(query)}`)
+            .then(res => res.json())
+            .then(data => {
+                searchList.innerHTML = '';
+
+                if (data.length === 0) {
+                    searchList.innerHTML = `
+                        <div class="px-4 py-3 text-sm text-gray-400 text-center">
+                            Aucun élève trouvé
+                        </div>`;
+                } else {
+                    data.forEach(eleve => {
+                        const initiales = (eleve.prenom[0] + eleve.nom[0]).toUpperCase();
+                        const div = document.createElement('div');
+                        div.className = 'flex items-center gap-3 px-4 py-2.5 hover:bg-primary-bg cursor-pointer transition-colors border-b border-gray-50 last:border-0';
+                        div.innerHTML = `
+                            <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center flex-shrink-0">
+                                ${initiales}
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-800">${eleve.prenom} ${eleve.nom}</p>
+                                <p class="text-xs text-gray-400">${eleve.classe ?? '—'}</p>
+                            </div>`;
+                        div.addEventListener('click', () => {
+                            window.location.href = `/eleves?search=${encodeURIComponent(eleve.prenom + ' ' + eleve.nom)}`;
+                        });
+                        searchList.appendChild(div);
+                    });
+                }
+
+                searchResults.classList.remove('hidden');
+            });
+    }, 300);
+});
+
+// Fermer si on clique ailleurs
+document.addEventListener('click', function (e) {
+    if (!document.getElementById('search-container').contains(e.target)) {
+        searchResults.classList.add('hidden');
+    }
+});
+</script>
+
+<script>
+function toggleNotif() {
+    document.getElementById('notif-dropdown').classList.toggle('hidden');
+    document.getElementById('aide-dropdown').classList.add('hidden');
+}
+
+function toggleAide() {
+    document.getElementById('aide-dropdown').classList.toggle('hidden');
+    document.getElementById('notif-dropdown').classList.add('hidden');
+}
+
+document.addEventListener('click', function(e) {
+    if (!document.getElementById('notif-container').contains(e.target)) {
+        document.getElementById('notif-dropdown').classList.add('hidden');
+    }
+    if (!document.getElementById('aide-container').contains(e.target)) {
+        document.getElementById('aide-dropdown').classList.add('hidden');
+    }
+});
+</script>
 </body>
 </html>

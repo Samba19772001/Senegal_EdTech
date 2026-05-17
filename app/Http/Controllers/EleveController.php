@@ -12,8 +12,19 @@ class EleveController extends Controller
 {
     public function index(Request $request)
     {
-        $classes = Classe::where('user_id', auth()->id())->get();
-        $query   = Eleve::where('user_id', auth()->id())
+        $annee   = auth()->user()->annee_scolaire;
+
+        // ← Ajouter ce filtre par année
+        $classes = Classe::where('user_id', auth()->id())
+            ->where('annee_scolaire', $annee)
+            ->get();
+
+        // ← Ajouter cette variable pour le formulaire d'ajout
+        $classeUser = Classe::where('user_id', auth()->id())
+            ->where('annee_scolaire', $annee)
+            ->first();
+
+        $query = Eleve::where('user_id', auth()->id())
             ->with('classe')
             ->orderBy('nom')
             ->orderBy('prenom');
@@ -27,8 +38,8 @@ class EleveController extends Controller
         if ($request->search) {
             $query->where(function($q) use ($request) {
                 $q->where('nom', 'like', "%{$request->search}%")
-                  ->orWhere('prenom', 'like', "%{$request->search}%")
-                  ->orWhere('matricule', 'like', "%{$request->search}%");
+                ->orWhere('prenom', 'like', "%{$request->search}%")
+                ->orWhere('matricule', 'like', "%{$request->search}%");
             });
         }
 
@@ -37,9 +48,8 @@ class EleveController extends Controller
         $totalFilles  = Eleve::where('user_id', auth()->id())->where('sexe', 'F')->count();
 
         return view('eleves.index', compact(
-            'eleves', 'classes', 'totalGarcons', 'totalFilles'
+            'eleves', 'classes', 'classeUser', 'totalGarcons', 'totalFilles'
         ));
-        
     }
 
     public function store(Request $request)

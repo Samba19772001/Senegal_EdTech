@@ -19,19 +19,30 @@ class BulletinController extends Controller
     public function index(Request $request)
     {
         $trimestreActif = $request->get('trimestre', 1);
+        $user = auth()->user();
 
-        $composition = Composition::where('user_id', auth()->id())
-            ->where('trimestre', $trimestreActif)
-            ->with('classe.eleves')
+        // Récupérer la classe active
+        $classeActive = \App\Models\Classe::where('user_id', $user->id)
+            ->where('annee_scolaire', $user->annee_scolaire)
+            ->latest()
             ->first();
 
+        $composition = null;
         $bulletinsComposition = collect();
 
-        if ($composition) {
-            $bulletinsComposition = Bulletin::where('user_id', auth()->id())
-            ->where('composition_id', $composition->id)
-            ->with('eleve')
-            ->get();
+        if ($classeActive) {
+            $composition = \App\Models\Composition::where('user_id', $user->id)
+                ->where('classe_id', $classeActive->id)
+                ->where('trimestre', $trimestreActif)
+                ->with('classe.eleves')
+                ->first();
+
+            if ($composition) {
+                $bulletinsComposition = \App\Models\Bulletin::where('user_id', $user->id)
+                    ->where('composition_id', $composition->id)
+                    ->with('eleve')
+                    ->get();
+            }
         }
 
         return view('bulletins.index', compact(
@@ -40,10 +51,9 @@ class BulletinController extends Controller
             'bulletinsComposition'
         ));
     }
-
-    public function generer($compositionId)
+   public function generer($compositionId)
     {
-        $composition = Composition::where('user_id', auth()->id())
+        $composition = \App\Models\Composition::where('user_id', auth()->id())
             ->findOrFail($compositionId);
 
         $this->bulletinService->genererTousBulletins($composition);
@@ -63,5 +73,40 @@ class BulletinController extends Controller
         }
 
         return response()->download($path);
+    }
+
+    public function downloadAll($compositionId)
+    {
+        $composition = \App\Models\Composition::where('user_id', auth()->id())
+            ->findOrFail($compositionId);
+
+        $bulletins = \App\Models\Bulletin::where('user_id', auth()->id())
+            ->where('composition_id', $compositionId)
+            ->with('eleve')
+            ->get();
+
+        if ($bulletins->isEmpty()) {
+            return redirect()->back()->withErrors(['zip' => 'Aucun bulletin à télécharger.']);
+        }
+
+        $zipFilename = "bulletins_T{$composition->trimestre}.zip";
+
+        $options = new \ZipStream\Option\Archive();
+        $options->setSendHttpHeaders(true);
+
+        $zip = new \ZipStream\ZipStream($zipFilename, $options);
+
+        foreach ($bulletins as $bulletin) {
+            $pdfPath = storage_path('app/' . $bulletin->pdf_path);
+            if (file_exists($pdfPath)) {
+                $nomEleve = $bulletin->eleve->prenom . '_' . $bulletin->eleve->nom;
+                $zip->addFileFromPath(
+                    "Bulletin_{$nomEleve}_T{$composition->trimestre}.pdf",
+                    $pdfPath
+                );
+            }
+        }
+
+        $zip->finish();
     }
 }

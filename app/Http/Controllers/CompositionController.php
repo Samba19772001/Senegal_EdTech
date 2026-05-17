@@ -11,8 +11,9 @@ class CompositionController extends Controller
 {
     public function index()
     {
-        // Récupérer uniquement la classe active (dernière créée)
-        $classeActive = \App\Models\Classe::where('user_id', auth()->id())
+        $niveau = auth()->user()->niveau_enseignement; // ← "CP" pas "CP A"
+
+        $classeActive = Classe::where('user_id', auth()->id())
             ->where('annee_scolaire', auth()->user()->annee_scolaire)
             ->latest()
             ->first();
@@ -24,41 +25,36 @@ class CompositionController extends Controller
             ->get()
             ->groupBy('trimestre');
 
-        $classes = \App\Models\Classe::where('user_id', auth()->id())->get();
+        $classes = Classe::where('user_id', auth()->id())->get();
 
         $statsCompositions = [];
 
         foreach ($compositions->flatten() as $composition) {
-            $niveau = $composition->classe->nom;
 
+            // ✅ niveau depuis le user, pas le nom de classe
             $matieres = Matiere::where(function ($q) use ($niveau) {
                 $q->where('is_default', true)->where('classe_niveau', $niveau);
             })->orWhere(function ($q) use ($niveau) {
                 $q->where('user_id', auth()->id())
-                ->where('is_default', false)
-                ->where('classe_niveau', $niveau);
+                  ->where('is_default', false)
+                  ->where('classe_niveau', $niveau);
             })->orderBy('ordre')->get();
 
-            $eleves   = $composition->classe->eleves;
-            $nbEleves = $eleves->count();
+            $eleves     = $composition->classe->eleves;
+            $nbEleves   = $eleves->count();
             $nbMatieres = $matieres->count();
 
-            // Matière saisie = toutes les lignes existent (note OU null)
             $matieresSaisies = $nbEleves > 0
                 ? $matieres->filter(function ($m) use ($composition, $nbEleves) {
                     return $composition->notes->where('matiere_id', $m->id)->count() >= $nbEleves;
                 })->count()
                 : 0;
 
-            // Progression = matières entièrement traitées / total matières
             $progression = $nbMatieres > 0
                 ? round($matieresSaisies / $nbMatieres * 100)
                 : 0;
 
-            // Complet = toutes les matières ont une ligne pour chaque élève (NULL inclus)
-            $estComplet = $nbMatieres > 0 && $matieresSaisies >= $nbMatieres;
-
-            // Bulletin bloqué si pas complet — même comportement qu'avant
+            $estComplet          = $nbMatieres > 0 && $matieresSaisies >= $nbMatieres;
             $peutGenererBulletin = $estComplet;
 
             $statsCompositions[$composition->id] = [
@@ -111,14 +107,15 @@ class CompositionController extends Controller
             ->with('classe')
             ->findOrFail($id);
 
-        $niveau = $composition->classe->nom;
+        // ✅ niveau depuis le user
+        $niveau = auth()->user()->niveau_enseignement;
 
         $matieres = Matiere::where(function ($q) use ($niveau) {
             $q->where('is_default', true)->where('classe_niveau', $niveau);
         })->orWhere(function ($q) use ($niveau) {
             $q->where('user_id', auth()->id())
-            ->where('is_default', false)
-            ->where('classe_niveau', $niveau);
+              ->where('is_default', false)
+              ->where('classe_niveau', $niveau);
         })->orderBy('ordre')->get();
 
         $eleves = $composition->classe->eleves;

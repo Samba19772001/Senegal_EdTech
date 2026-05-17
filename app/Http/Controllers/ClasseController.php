@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Classe;
+use App\Models\Composition;
 use Illuminate\Http\Request;
 
 class ClasseController extends Controller
@@ -16,15 +17,25 @@ class ClasseController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nom'           => ['required', 'string', 'max:20'],
-            'annee_scolaire'=> ['required', 'string', 'max:9'],
+            'nom'            => ['required', 'string', 'max:20'],
+            'annee_scolaire' => ['required', 'string', 'max:9'],
         ]);
 
-        Classe::create([
+        $classe = Classe::create([
             'user_id'        => auth()->id(),
             'nom'            => $request->nom,
             'annee_scolaire' => $request->annee_scolaire,
         ]);
+
+        // Créer automatiquement les 3 compositions
+        foreach ([1, 2, 3] as $trimestre) {
+            Composition::create([
+                'user_id'   => auth()->id(),
+                'classe_id' => $classe->id,
+                'trimestre' => $trimestre,
+                'libelle'   => 'Composition T' . $trimestre,
+            ]);
+        }
 
         return redirect()->back()->with('success', 'Classe créée avec succès.');
     }

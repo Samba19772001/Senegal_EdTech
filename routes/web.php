@@ -52,7 +52,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/bulletins', [BulletinController::class, 'index'])->name('bulletins.index');
     Route::get('/compositions/{composition}/generer', [BulletinController::class, 'generer'])->name('bulletins.generer');
     Route::get('/bulletins/{bulletin}/download', [BulletinController::class, 'download'])->name('bulletins.download');
-
+    Route::get('/bulletins/{composition}/download-all', [BulletinController::class, 'downloadAll'])->name('bulletins.downloadAll');
     // Profil
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -61,6 +61,31 @@ Route::middleware('auth')->group(function () {
     //Paramètres
     Route::get('/parametres', [ParametreController::class, 'index'])->name('parametres.index');
     Route::put('/parametres', [ParametreController::class, 'update'])->name('parametres.update');
+    
+    // Apropos
+    Route::get('/apropos', function () {
+        return view('apropos.index');
+    })->name('apropos.index');
+
+    Route::get('/search-eleves', function (\Illuminate\Http\Request $request) {
+        $q = $request->get('q', '');
+        $eleves = \App\Models\Eleve::where('user_id', auth()->id())
+            ->where(function($query) use ($q) {
+                $query->where('nom', 'like', "%{$q}%")
+                    ->orWhere('prenom', 'like', "%{$q}%");
+            })
+            ->with('classe')
+            ->limit(6)
+            ->get()
+            ->map(fn($e) => [
+                'id'     => $e->id,
+                'nom'    => $e->nom,
+                'prenom' => $e->prenom,
+                'classe' => $e->classe->nom ?? '—',
+            ]);
+
+        return response()->json($eleves);
+    })->name('search.eleves');
 });
 
 require __DIR__.'/auth.php';
