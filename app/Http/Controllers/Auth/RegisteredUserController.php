@@ -34,7 +34,17 @@ class RegisteredUserController extends Controller
             'commune'              => ['nullable', 'string', 'max:100'],
             'annee_scolaire'       => ['required', 'string', 'max:9'],
             'niveau_enseignement'  => ['required', 'in:CI,CP,CE1,CE2,CM1,CM2'],
+            'access_key'           => ['required', 'string'],
         ]);
+
+        // Vérifier la clé d'accès
+        $cle = \App\Models\AccessKey::where('cle', $request->access_key)
+            ->where('est_utilisee', false)
+            ->first();
+
+        if (!$cle) {
+            return back()->withErrors(['access_key' => 'Clé d\'accès invalide ou déjà utilisée.'])->withInput();
+    }
 
         $user = User::create([
             'nom'                  => $request->nom,
@@ -49,6 +59,13 @@ class RegisteredUserController extends Controller
             'commune'              => $request->commune,
             'annee_scolaire'       => $request->annee_scolaire,
             'niveau_enseignement'  => $request->niveau_enseignement,
+            'access_key'           => $request->access_key,
+        ]);
+
+        // Marquer la clé comme utilisée
+        $cle->update([
+            'est_utilisee' => true,
+            'user_id'      => $user->id,
         ]);
 
         event(new Registered($user));

@@ -23,6 +23,8 @@ class User extends Authenticatable
         'commune',
         'annee_scolaire',
         'niveau_enseignement',
+        'access_key',
+        'is_blocked',
     ];
 
     protected $hidden = [

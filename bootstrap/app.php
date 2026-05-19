@@ -11,7 +11,17 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // Exclure les routes admin de la vérification CSRF
+        $middleware->validateCsrfTokens(except: [
+            'admin/*',
+        ]);
+
+        $middleware->alias([
+            'admin'       => \App\Http\Middleware\AdminMiddleware::class,
+            'not.blocked' => \App\Http\Middleware\CheckUserNotBlocked::class,
+        ]);
+
+        $middleware->appendToGroup('web', \App\Http\Middleware\CheckUserNotBlocked::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

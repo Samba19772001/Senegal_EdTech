@@ -175,6 +175,28 @@
                     </div>
                 </div>
 
+                <hr class="border-border"/>
+
+                {{-- SECTION 4 : Clé d'accès --}}
+                <div>
+                    <div class="flex items-center gap-3 mb-5">
+                        <div class="w-7 h-7 rounded-full bg-primary text-white text-xs font-bold flex items-center justify-center">4</div>
+                        <h3 class="text-text-dark font-semibold text-base">Clé d'accès</h3>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-text-muted uppercase tracking-wide mb-1.5">
+                            Clé d'accès <span class="text-red-400">*</span>
+                        </label>
+                        <input type="text" name="access_key" value="{{ old('access_key') }}"
+                            placeholder="XXXX-XXXX-XXXX"
+                            class="w-full border border-border rounded-xl px-4 py-2.5 text-sm text-text-dark placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary bg-bg-page font-mono tracking-widest @error('access_key') border-red-400 @enderror"/>
+                        <p class="text-xs text-text-muted mt-1">Clé fournie par l'administrateur Senegal EdTech</p>
+                        @error('access_key')
+                            <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+
                 {{-- Submit --}}
                 <button type="submit"
                     class="w-full bg-primary hover:bg-primary-light text-white font-semibold py-3 rounded-xl transition-colors duration-200 text-sm tracking-wide">

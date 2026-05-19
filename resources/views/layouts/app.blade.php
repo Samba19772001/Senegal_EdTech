@@ -30,6 +30,8 @@
         .sidebar-link:hover { background-color: #eff4ff; color: #00288e; }
         .sidebar-link.active { background-color: #eff4ff; color: #00288e; border-left: 4px solid #00288e; }
         .sidebar-link.active svg { color: #00288e; }
+        #sidebar { transition: transform 0.3s ease; }
+        #overlay { transition: opacity 0.3s ease; }
     </style>
     @stack('styles')
 </head>
@@ -37,13 +39,18 @@
 
 <div class="flex h-screen overflow-hidden">
 
-    {{-- ═══════════════════════════════════ --}}
+    {{-- OVERLAY mobile --}}
+    <div id="overlay"
+        class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden lg:hidden"
+        onclick="closeSidebar()"></div>
+
     {{-- SIDEBAR --}}
-    {{-- ═══════════════════════════════════ --}}
-    <aside class="w-72 bg-white border-r border-border flex flex-col fixed h-full z-20">
+    <aside id="sidebar"
+        class="w-72 bg-white border-r border-border flex flex-col fixed h-full z-40
+               -translate-x-full lg:translate-x-0 transition-transform duration-300">
 
         {{-- Logo --}}
-        <div class="px-6 py-5 border-b border-border">
+        <div class="px-6 py-5 border-b border-border flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center flex-shrink-0">
                     <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -53,16 +60,21 @@
                 </div>
                 <div>
                     <p class="text-text-dark font-bold text-sm leading-tight">Senegal EdTech</p>
-                    <p class="text-text-muted text-xs">Portail de l’enseignement primaire</p>
+                    <p class="text-text-muted text-xs">Portail de l'enseignement primaire</p>
                 </div>
             </div>
+            {{-- Bouton fermer sidebar sur mobile --}}
+            <button onclick="closeSidebar()" class="lg:hidden text-text-muted hover:text-primary">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
         </div>
 
         {{-- Navigation --}}
         <nav class="flex-1 px-4 py-5 space-y-1 overflow-y-auto">
 
-            {{-- Dashboard --}}
-            <a href="{{ route('dashboard') }}"
+            <a href="{{ route('dashboard') }}" onclick="closeSidebar()"
                 class="sidebar-link {{ request()->routeIs('dashboard') ? 'active' : '' }} flex items-center gap-3 px-4 py-2.5 rounded-xl text-text-muted text-sm font-medium">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -71,8 +83,7 @@
                 Dashboard
             </a>
 
-            {{-- Élèves --}}
-            <a href="{{ route('eleves.index') }}"
+            <a href="{{ route('eleves.index') }}" onclick="closeSidebar()"
                 class="sidebar-link {{ request()->routeIs('eleves.*') ? 'active' : '' }} flex items-center gap-3 px-4 py-2.5 rounded-xl text-text-muted text-sm font-medium">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -81,8 +92,7 @@
                 Élèves
             </a>
 
-            {{-- Matières --}}
-            <a href="{{ route('matieres.index') }}"
+            <a href="{{ route('matieres.index') }}" onclick="closeSidebar()"
                 class="sidebar-link {{ request()->routeIs('matieres.*') ? 'active' : '' }} flex items-center gap-3 px-4 py-2.5 rounded-xl text-text-muted text-sm font-medium">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -91,8 +101,7 @@
                 Matières
             </a>
 
-            {{-- Notes --}}
-            <a href="{{ route('notes.index') }}"
+            <a href="{{ route('notes.index') }}" onclick="closeSidebar()"
                 class="sidebar-link {{ request()->routeIs('notes.*') ? 'active' : '' }} flex items-center gap-3 px-4 py-2.5 rounded-xl text-text-muted text-sm font-medium">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -101,8 +110,7 @@
                 Notes
             </a>
 
-            {{-- Compositions --}}
-            <a href="{{ route('compositions.index') }}"
+            <a href="{{ route('compositions.index') }}" onclick="closeSidebar()"
                 class="sidebar-link {{ request()->routeIs('compositions.*') ? 'active' : '' }} flex items-center gap-3 px-4 py-2.5 rounded-xl text-text-muted text-sm font-medium">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -111,8 +119,7 @@
                 Compositions
             </a>
 
-            {{-- Bulletins --}}
-            <a href="{{ route('bulletins.index') }}"
+            <a href="{{ route('bulletins.index') }}" onclick="closeSidebar()"
                 class="sidebar-link {{ request()->routeIs('bulletins.*') ? 'active' : '' }} flex items-center gap-3 px-4 py-2.5 rounded-xl text-text-muted text-sm font-medium">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -121,8 +128,7 @@
                 Bulletins
             </a>
 
-            {{-- Profil --}}
-            <a href="{{ route('profile.edit') }}"
+            <a href="{{ route('profile.edit') }}" onclick="closeSidebar()"
                 class="sidebar-link {{ request()->routeIs('profile.*') ? 'active' : '' }} flex items-center gap-3 px-4 py-2.5 rounded-xl text-text-muted text-sm font-medium">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -136,8 +142,7 @@
         {{-- Bas de sidebar --}}
         <div class="px-4 py-4 border-t border-border space-y-2">
 
-            {{-- À propos --}}
-            <a href="{{ route('apropos.index') }}"
+            <a href="{{ route('apropos.index') }}" onclick="closeSidebar()"
                 class="sidebar-link {{ request()->routeIs('apropos.*') ? 'active' : '' }} flex items-center gap-3 px-4 py-2.5 rounded-xl text-text-muted text-sm font-medium">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -146,8 +151,7 @@
                 À propos
             </a>
 
-            {{-- Settings --}}
-            <a href="{{ route('parametres.index') }}"
+            <a href="{{ route('parametres.index') }}" onclick="closeSidebar()"
                 class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-xl text-text-muted text-sm font-medium">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -157,7 +161,6 @@
                 Paramètres
             </a>
 
-            {{-- Déconnexion --}}
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button type="submit"
@@ -173,33 +176,38 @@
         </div>
     </aside>
 
-    {{-- ═══════════════════════════════════ --}}
     {{-- CONTENU PRINCIPAL --}}
-    {{-- ═══════════════════════════════════ --}}
-    <div class="flex-1 flex flex-col ml-72 min-h-screen">
+    <div class="flex-1 flex flex-col lg:ml-72 min-h-screen">
 
         {{-- HEADER --}}
-        <header class="bg-white border-b border-border px-8 py-4 flex items-center justify-between sticky top-0 z-10">
+        <header class="bg-white border-b border-border px-4 lg:px-8 py-4 flex items-center justify-between sticky top-0 z-10">
 
-            {{-- Titre de la page --}}
-            <div>
-                <p class="text-xs text-text-muted uppercase tracking-widest font-medium">@yield('page_label', 'NAVIGATION')</p>
-                <h1 class="text-xl font-bold text-text-dark">@yield('page_title', 'Page')</h1>
+            {{-- Gauche : hamburger + titre --}}
+            <div class="flex items-center gap-3">
+                {{-- Bouton hamburger (mobile) --}}
+                <button onclick="openSidebar()"
+                    class="lg:hidden w-9 h-9 flex items-center justify-center rounded-xl border border-border bg-bg-page hover:bg-primary-bg transition-colors">
+                    <svg class="w-5 h-5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </button>
+                <div>
+                    <p class="text-xs text-text-muted uppercase tracking-widest font-medium hidden sm:block">@yield('page_label', 'NAVIGATION')</p>
+                    <h1 class="text-lg lg:text-xl font-bold text-text-dark">@yield('page_title', 'Page')</h1>
+                </div>
             </div>
 
             {{-- Droite header --}}
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-2 lg:gap-4">
 
-                {{-- Recherche avec suggestions --}}
-                <div class="relative" id="search-container">
+                {{-- Recherche (cachée sur mobile) --}}
+                <div class="relative hidden md:block" id="search-container">
                     <svg class="w-4 h-4 text-text-muted absolute left-3 top-1/2 -translate-y-1/2 z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                     </svg>
                     <input type="text" id="search-input" placeholder="Rechercher un élève..."
                         autocomplete="off"
-                        class="pl-9 pr-4 py-2 border border-border rounded-xl text-sm bg-bg-page text-text-dark placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary w-56"/>
-
-                    {{-- Dropdown suggestions --}}
+                        class="pl-9 pr-4 py-2 border border-border rounded-xl text-sm bg-bg-page text-text-dark placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary w-44 lg:w-56"/>
                     <div id="search-results"
                         class="absolute top-full left-0 mt-1 w-72 bg-white border border-border rounded-xl shadow-lg z-50 hidden overflow-hidden">
                         <div id="search-list"></div>
@@ -217,19 +225,15 @@
                         @php
                             $alertes = [];
                             $user    = auth()->user();
-                            $niveau  = $user->niveau_enseignement; // ✅ CP, CE1... pas "CP A"
-
+                            $niveau  = $user->niveau_enseignement;
                             $classeActive = $user->classes()
                                 ->where('annee_scolaire', $user->annee_scolaire)
                                 ->latest()->first();
-
                             if ($classeActive) {
                                 $compositions = \App\Models\Composition::where('user_id', $user->id)
                                     ->where('classe_id', $classeActive->id)
                                     ->with(['notes', 'classe.eleves'])
                                     ->get();
-
-                                // Calculer nbMatieres une seule fois avec le bon niveau
                                 $nbMatieres = \App\Models\Matiere::where(function($q) use ($niveau) {
                                     $q->where('is_default', true)->where('classe_niveau', $niveau);
                                 })->orWhere(function($q) use ($niveau) {
@@ -237,13 +241,10 @@
                                     ->where('is_default', false)
                                     ->where('classe_niveau', $niveau);
                                 })->count();
-
                                 foreach ($compositions as $comp) {
                                     $nbEleves       = $comp->classe->eleves->count();
                                     $notesCount     = $comp->notes->count();
                                     $notesAttendues = $nbMatieres * $nbEleves;
-
-                                    // Alerte notes incomplètes
                                     if ($nbEleves > 0 && $notesCount < $notesAttendues) {
                                         $alertes[] = [
                                             'type'    => 'warning',
@@ -251,8 +252,6 @@
                                             'lien'    => route('compositions.index'),
                                         ];
                                     }
-
-                                    // Alerte bulletins non générés
                                     $bulletinsCount = \App\Models\Bulletin::where('composition_id', $comp->id)->count();
                                     if ($nbEleves > 0 && $notesCount >= $notesAttendues && $bulletinsCount == 0) {
                                         $alertes[] = [
@@ -262,8 +261,6 @@
                                         ];
                                     }
                                 }
-
-                                // Alerte aucun élève
                                 if (\App\Models\Eleve::where('user_id', $user->id)->count() == 0) {
                                     $alertes[] = [
                                         'type'    => 'info',
@@ -273,17 +270,14 @@
                                 }
                             }
                         @endphp
-
                         @if(count($alertes) > 0)
                             <span class="absolute top-1 right-1 w-4 h-4 bg-red-500 rounded-full text-white text-xs flex items-center justify-center font-bold">
                                 {{ count($alertes) }}
                             </span>
                         @endif
                     </button>
-
-                    {{-- Dropdown notifications --}}
                     <div id="notif-dropdown"
-                        class="hidden absolute right-0 top-full mt-2 w-80 bg-white border border-border rounded-2xl shadow-xl z-50 overflow-hidden">
+                        class="hidden absolute right-0 top-full mt-2 w-72 lg:w-80 bg-white border border-border rounded-2xl shadow-xl z-50 overflow-hidden">
                         <div class="px-4 py-3 border-b border-border flex items-center justify-between">
                             <h3 class="font-bold text-text-dark text-sm">Alertes</h3>
                             @if(count($alertes) > 0)
@@ -324,7 +318,7 @@
                 </div>
 
                 {{-- Aide --}}
-                <div class="relative" id="aide-container">
+                <div class="relative hidden sm:block" id="aide-container">
                     <button onclick="toggleAide()"
                         class="w-9 h-9 flex items-center justify-center rounded-xl border border-border bg-bg-page hover:bg-primary-bg transition-colors">
                         <svg class="w-5 h-5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -332,10 +326,8 @@
                                 d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
                     </button>
-
-                    {{-- Dropdown aide --}}
                     <div id="aide-dropdown"
-                        class="hidden absolute right-0 top-full mt-2 w-80 bg-white border border-border rounded-2xl shadow-xl z-50 overflow-hidden">
+                        class="hidden absolute right-0 top-full mt-2 w-72 lg:w-80 bg-white border border-border rounded-2xl shadow-xl z-50 overflow-hidden">
                         <div class="px-4 py-3 border-b border-border">
                             <h3 class="font-bold text-text-dark text-sm">Guide rapide</h3>
                             <p class="text-xs text-text-muted mt-0.5">Comment utiliser la plateforme</p>
@@ -358,7 +350,6 @@
                                 </div>
                             </a>
                             @endforeach
-
                             <div class="pt-2 border-t border-border">
                                 <a href="{{ route('apropos.index') }}"
                                     class="flex items-center justify-center gap-2 w-full py-2 bg-primary-bg text-primary rounded-xl text-sm font-medium hover:bg-primary hover:text-white transition-colors">
@@ -373,11 +364,11 @@
                 </div>
 
                 {{-- Avatar --}}
-                <div class="flex items-center gap-2.5">
-                    <div class="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-white text-sm font-bold ring-2 ring-blue-200">
+                <div class="flex items-center gap-2">
+                    <div class="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-white text-sm font-bold ring-2 ring-blue-200 flex-shrink-0">
                         {{ strtoupper(substr(auth()->user()->prenom ?? 'U', 0, 1)) }}{{ strtoupper(substr(auth()->user()->nom ?? '', 0, 1)) }}
                     </div>
-                    <div class="hidden md:block">
+                    <div class="hidden lg:block">
                         <p class="text-sm font-semibold text-text-dark leading-tight">
                             {{ auth()->user()->prenom ?? '' }} {{ auth()->user()->nom ?? '' }}
                         </p>
@@ -389,7 +380,7 @@
         </header>
 
         {{-- PAGE CONTENT --}}
-        <main class="flex-1 p-8 overflow-y-auto">
+        <main class="flex-1 p-4 lg:p-8 overflow-y-auto">
             @yield('content')
         </main>
 
@@ -399,84 +390,78 @@
 @stack('scripts')
 
 <script>
-const searchInput  = document.getElementById('search-input');
-const searchResults = document.getElementById('search-results');
-const searchList   = document.getElementById('search-list');
-
-let debounceTimer;
-
-searchInput.addEventListener('input', function () {
-    clearTimeout(debounceTimer);
-    const query = this.value.trim();
-
-    if (query.length < 2) {
-        searchResults.classList.add('hidden');
-        return;
-    }
-
-    debounceTimer = setTimeout(() => {
-        fetch(`/search-eleves?q=${encodeURIComponent(query)}`)
-            .then(res => res.json())
-            .then(data => {
-                searchList.innerHTML = '';
-
-                if (data.length === 0) {
-                    searchList.innerHTML = `
-                        <div class="px-4 py-3 text-sm text-gray-400 text-center">
-                            Aucun élève trouvé
-                        </div>`;
-                } else {
-                    data.forEach(eleve => {
-                        const initiales = (eleve.prenom[0] + eleve.nom[0]).toUpperCase();
-                        const div = document.createElement('div');
-                        div.className = 'flex items-center gap-3 px-4 py-2.5 hover:bg-primary-bg cursor-pointer transition-colors border-b border-gray-50 last:border-0';
-                        div.innerHTML = `
-                            <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center flex-shrink-0">
-                                ${initiales}
-                            </div>
-                            <div>
-                                <p class="text-sm font-medium text-gray-800">${eleve.prenom} ${eleve.nom}</p>
-                                <p class="text-xs text-gray-400">${eleve.classe ?? '—'}</p>
-                            </div>`;
-                        div.addEventListener('click', () => {
-                            window.location.href = `/eleves?search=${encodeURIComponent(eleve.prenom + ' ' + eleve.nom)}`;
-                        });
-                        searchList.appendChild(div);
-                    });
-                }
-
-                searchResults.classList.remove('hidden');
-            });
-    }, 300);
-});
-
-// Fermer si on clique ailleurs
-document.addEventListener('click', function (e) {
-    if (!document.getElementById('search-container').contains(e.target)) {
-        searchResults.classList.add('hidden');
-    }
-});
-</script>
-
-<script>
-function toggleNotif() {
-    document.getElementById('notif-dropdown').classList.toggle('hidden');
-    document.getElementById('aide-dropdown').classList.add('hidden');
+// Sidebar mobile
+function openSidebar() {
+    document.getElementById('sidebar').classList.remove('-translate-x-full');
+    document.getElementById('overlay').classList.remove('hidden');
+}
+function closeSidebar() {
+    document.getElementById('sidebar').classList.add('-translate-x-full');
+    document.getElementById('overlay').classList.add('hidden');
 }
 
+// Recherche
+const searchInput   = document.getElementById('search-input');
+const searchResults = document.getElementById('search-results');
+const searchList    = document.getElementById('search-list');
+
+if (searchInput) {
+    let debounceTimer;
+    searchInput.addEventListener('input', function () {
+        clearTimeout(debounceTimer);
+        const query = this.value.trim();
+        if (query.length < 2) { searchResults.classList.add('hidden'); return; }
+        debounceTimer = setTimeout(() => {
+            fetch(`/search-eleves?q=${encodeURIComponent(query)}`)
+                .then(res => res.json())
+                .then(data => {
+                    searchList.innerHTML = '';
+                    if (data.length === 0) {
+                        searchList.innerHTML = `<div class="px-4 py-3 text-sm text-gray-400 text-center">Aucun élève trouvé</div>`;
+                    } else {
+                        data.forEach(eleve => {
+                            const initiales = (eleve.prenom[0] + eleve.nom[0]).toUpperCase();
+                            const div = document.createElement('div');
+                            div.className = 'flex items-center gap-3 px-4 py-2.5 hover:bg-primary-bg cursor-pointer transition-colors border-b border-gray-50 last:border-0';
+                            div.innerHTML = `
+                                <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center flex-shrink-0">${initiales}</div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-800">${eleve.prenom} ${eleve.nom}</p>
+                                    <p class="text-xs text-gray-400">${eleve.classe ?? '—'}</p>
+                                </div>`;
+                            div.addEventListener('click', () => {
+                                window.location.href = `/eleves?search=${encodeURIComponent(eleve.prenom + ' ' + eleve.nom)}`;
+                            });
+                            searchList.appendChild(div);
+                        });
+                    }
+                    searchResults.classList.remove('hidden');
+                });
+        }, 300);
+    });
+    document.addEventListener('click', function (e) {
+        const sc = document.getElementById('search-container');
+        if (sc && !sc.contains(e.target)) searchResults.classList.add('hidden');
+    });
+}
+
+// Notif & Aide
+function toggleNotif() {
+    document.getElementById('notif-dropdown').classList.toggle('hidden');
+    const aide = document.getElementById('aide-dropdown');
+    if (aide) aide.classList.add('hidden');
+}
 function toggleAide() {
     document.getElementById('aide-dropdown').classList.toggle('hidden');
     document.getElementById('notif-dropdown').classList.add('hidden');
 }
-
 document.addEventListener('click', function(e) {
-    if (!document.getElementById('notif-container').contains(e.target)) {
-        document.getElementById('notif-dropdown').classList.add('hidden');
-    }
-    if (!document.getElementById('aide-container').contains(e.target)) {
-        document.getElementById('aide-dropdown').classList.add('hidden');
-    }
+    const nc = document.getElementById('notif-container');
+    const ac = document.getElementById('aide-container');
+    if (nc && !nc.contains(e.target)) document.getElementById('notif-dropdown').classList.add('hidden');
+    if (ac && !ac.contains(e.target)) document.getElementById('aide-dropdown').classList.add('hidden');
 });
 </script>
+
 </body>
 </html>
