@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Bulletin — {{ $eleve->prenom }} {{ $eleve->nom }}</title>
+    <title>{{ $eleve->prenom }} {{ $eleve->nom }}</title>
     <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: DejaVu Sans, sans-serif; font-size: 11px; color: #1E293B; padding: 20px; }

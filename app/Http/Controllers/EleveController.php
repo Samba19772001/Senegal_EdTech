@@ -133,4 +133,31 @@ class EleveController extends Controller
         return redirect()->route('eleves.index')
             ->with('success', 'Tous les élèves ont été supprimés avec succès.');
     }
+
+    public function suggestions(Request $request)
+    {
+        try {
+
+            $q = $request->get('q');
+
+            if (!$q) {
+                return response()->json([]);
+            }
+
+            $eleves = Eleve::query()
+                ->where('nom', 'LIKE', "%{$q}%")
+                ->orWhere('prenom', 'LIKE', "%{$q}%")
+                ->limit(8)
+                ->get(['id', 'nom', 'prenom']);
+
+            return response()->json($eleves);
+
+        } catch (\Throwable $e) {
+
+            return response()->json([
+                'error' => true,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

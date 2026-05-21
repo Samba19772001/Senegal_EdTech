@@ -10,11 +10,12 @@
     <div class="flex items-center justify-between mb-6">
         <p class="text-text-muted text-sm">Gérez les matières de votre classe</p>
         <button onclick="ouvrirModal()"
-            class="flex items-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary-light text-white rounded-xl text-sm font-medium transition-colors">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            class="flex items-center gap-2 px-3 lg:px-4 py-2.5 bg-primary hover:bg-primary-light text-white rounded-xl text-sm font-medium transition-colors">
+            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
             </svg>
-            Ajouter une matière
+            <span class="hidden sm:inline">Ajouter une matière</span>
+            <span class="sm:hidden">Ajouter</span>
         </button>
     </div>
 
@@ -26,8 +27,8 @@
     @endif
 
     {{-- Info niveau --}}
-    <div class="bg-primary-bg border border-blue-200 rounded-2xl px-5 py-4 mb-6 flex items-center gap-3">
-        <svg class="w-5 h-5 text-primary flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div class="bg-primary-bg border border-blue-200 rounded-2xl px-4 lg:px-5 py-4 mb-6 flex items-start gap-3">
+        <svg class="w-5 h-5 text-primary flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
         </svg>
         <p class="text-sm text-primary">
@@ -41,11 +42,12 @@
     <h3 class="text-text-dark font-semibold text-sm uppercase tracking-widest mb-3">
         Matières par défaut
     </h3>
-    <div class="grid grid-cols-3 gap-4 mb-6">
+    {{-- 1 col mobile, 2 col tablette, 3 col desktop --}}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
         @foreach($matieres_default as $matiere)
-        <div class="bg-white rounded-2xl border border-border p-5 shadow-sm hover:border-primary hover:shadow-md transition-all">
-            <div class="flex items-start justify-between mb-4">
-                <div class="w-10 h-10 bg-primary-bg rounded-xl flex items-center justify-center">
+        <div class="bg-white rounded-2xl border border-border p-4 lg:p-5 shadow-sm hover:border-primary hover:shadow-md transition-all">
+            <div class="flex items-start justify-between mb-3 lg:mb-4">
+                <div class="w-10 h-10 bg-primary-bg rounded-xl flex items-center justify-center flex-shrink-0">
                     <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
                     </svg>
@@ -53,7 +55,7 @@
                 <span class="text-xs font-semibold bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full">Par défaut</span>
             </div>
             <h3 class="text-text-dark font-semibold text-base mb-1">{{ $matiere->nom }}</h3>
-            <p class="text-text-muted text-xs mb-4">Notée sur <span class="font-bold text-primary">{{ $matiere->note_sur }}</span> points</p>
+            <p class="text-text-muted text-xs mb-3 lg:mb-4">Notée sur <span class="font-bold text-primary">{{ $matiere->note_sur }}</span> points</p>
             <div class="flex items-center justify-between pt-3 border-t border-border">
                 <span class="text-xs text-text-muted">Note ramenée sur 10</span>
                 <span class="text-xs font-bold text-green-600">× 10 ÷ {{ $matiere->note_sur }}</span>
@@ -68,11 +70,11 @@
     <h3 class="text-text-dark font-semibold text-sm uppercase tracking-widest mb-3">
         Matières personnalisées
     </h3>
-    <div class="grid grid-cols-3 gap-4 mb-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
         @foreach($matieres_custom as $matiere)
-        <div class="bg-white rounded-2xl border border-amber-200 p-5 shadow-sm hover:shadow-md transition-all">
-            <div class="flex items-start justify-between mb-4">
-                <div class="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center">
+        <div class="bg-white rounded-2xl border border-amber-200 p-4 lg:p-5 shadow-sm hover:shadow-md transition-all">
+            <div class="flex items-start justify-between mb-3 lg:mb-4">
+                <div class="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center flex-shrink-0">
                     <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
                     </svg>
@@ -91,7 +93,7 @@
                 </div>
             </div>
             <h3 class="text-text-dark font-semibold text-base mb-1">{{ $matiere->nom }}</h3>
-            <p class="text-text-muted text-xs mb-4">Notée sur <span class="font-bold text-amber-600">{{ $matiere->note_sur }}</span> points</p>
+            <p class="text-text-muted text-xs mb-3 lg:mb-4">Notée sur <span class="font-bold text-amber-600">{{ $matiere->note_sur }}</span> points</p>
             <div class="flex items-center justify-between pt-3 border-t border-border">
                 <span class="text-xs text-text-muted">Note ramenée sur 10</span>
                 <span class="text-xs font-bold text-green-600">× 10 ÷ {{ $matiere->note_sur }}</span>
@@ -112,10 +114,10 @@
     </div>
     @endif
 
-    {{-- MODAL Ajouter une matière --}}
-    <div id="modalAjout" class="fixed inset-0 z-50 hidden items-center justify-center">
+    {{-- MODAL --}}
+    <div id="modalAjout" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
         <div class="absolute inset-0 bg-black bg-opacity-40" onclick="fermerModal()"></div>
-        <div class="relative bg-white rounded-2xl border border-border shadow-xl w-full max-w-md mx-4 z-10">
+        <div class="relative bg-white rounded-2xl border border-border shadow-xl w-full max-w-md z-10">
             <div class="bg-primary px-6 py-5 rounded-t-2xl flex items-center justify-between">
                 <div>
                     <h3 class="text-white font-semibold text-base">Ajouter une matière</h3>

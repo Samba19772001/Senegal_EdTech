@@ -6,17 +6,16 @@
 
 @section('content')
 
-    {{-- Messages --}}
     @if(session('status') === 'profile-updated')
         <div class="bg-green-50 border border-green-200 text-green-700 text-sm px-4 py-3 rounded-xl mb-6">
             Profil mis à jour avec succès !
         </div>
     @endif
 
-    <div class="grid grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-        {{-- Carte profil gauche --}}
-        <div class="col-span-1">
+        {{-- Carte profil --}}
+        <div class="lg:col-span-1">
             <div class="bg-white rounded-2xl border border-border shadow-sm p-6 text-center">
                 <div class="w-20 h-20 rounded-2xl bg-primary flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4 ring-4 ring-blue-100">
                     {{ strtoupper(substr(auth()->user()->prenom, 0, 1)) }}{{ strtoupper(substr(auth()->user()->nom, 0, 1)) }}
@@ -44,18 +43,17 @@
             </div>
         </div>
 
-        {{-- Formulaires droite --}}
-        <div class="col-span-2 space-y-5">
+        {{-- Formulaires --}}
+        <div class="lg:col-span-2 space-y-5">
 
-            {{-- Infos personnelles --}}
             <div class="bg-white rounded-2xl border border-border shadow-sm overflow-hidden">
                 <div class="bg-primary px-6 py-4">
                     <h3 class="text-white font-semibold text-base">Informations personnelles</h3>
                     <p class="text-blue-200 text-xs mt-0.5">Modifiez vos informations de base</p>
                 </div>
-                <form method="POST" action="{{ route('profile.update') }}" class="px-6 py-6 space-y-4">
+                <form method="POST" action="{{ route('profile.update') }}" class="px-4 lg:px-6 py-6 space-y-4">
                     @csrf @method('PATCH')
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-medium text-text-muted uppercase tracking-wide mb-1.5">Nom</label>
                             <input type="text" name="nom" value="{{ auth()->user()->nom }}"
@@ -78,23 +76,22 @@
                         </div>
                     </div>
                     <div class="flex justify-end">
-                        <button type="submit" class="px-6 py-2.5 bg-primary hover:bg-primary-light text-white rounded-xl text-sm font-medium transition-colors">
+                        <button type="submit" class="w-full sm:w-auto px-6 py-2.5 bg-primary hover:bg-primary-light text-white rounded-xl text-sm font-medium transition-colors">
                             Enregistrer
                         </button>
                     </div>
                 </form>
             </div>
 
-            {{-- Infos professionnelles --}}
             <div class="bg-white rounded-2xl border border-border shadow-sm overflow-hidden">
                 <div class="bg-primary px-6 py-4">
                     <h3 class="text-white font-semibold text-base">Informations professionnelles</h3>
                     <p class="text-blue-200 text-xs mt-0.5">Informations de votre école</p>
                 </div>
-                <form method="POST" action="{{ route('profile.update') }}" class="px-6 py-6 space-y-4">
+                <form method="POST" action="{{ route('profile.update') }}" class="px-4 lg:px-6 py-6 space-y-4">
                     @csrf @method('PATCH')
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="col-span-2">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="sm:col-span-2">
                             <label class="block text-xs font-medium text-text-muted uppercase tracking-wide mb-1.5">Nom de l'école</label>
                             <input type="text" name="nom_ecole" value="{{ auth()->user()->nom_ecole }}"
                                 class="w-full border border-border rounded-xl px-4 py-2.5 text-sm text-text-dark focus:outline-none focus:ring-2 focus:ring-primary bg-bg-page"/>
@@ -120,26 +117,25 @@
                                 class="w-full border border-border rounded-xl px-4 py-2.5 text-sm text-text-dark focus:outline-none focus:ring-2 focus:ring-primary bg-bg-page"/>
                         </div>
                         <div>
-                            <label class="block text-xs font-medium text-text-muted uppercase tracking-wide mb-1.5">Commune / Localité</label>
+                            <label class="block text-xs font-medium text-text-muted uppercase tracking-wide mb-1.5">Commune</label>
                             <input type="text" name="commune" value="{{ auth()->user()->commune }}"
                                 class="w-full border border-border rounded-xl px-4 py-2.5 text-sm text-text-dark focus:outline-none focus:ring-2 focus:ring-primary bg-bg-page"/>
                         </div>
                     </div>
                     <div class="flex justify-end">
-                        <button type="submit" class="px-6 py-2.5 bg-primary hover:bg-primary-light text-white rounded-xl text-sm font-medium transition-colors">
+                        <button type="submit" class="w-full sm:w-auto px-6 py-2.5 bg-primary hover:bg-primary-light text-white rounded-xl text-sm font-medium transition-colors">
                             Enregistrer
                         </button>
                     </div>
                 </form>
             </div>
 
-            {{-- Mot de passe --}}
             <div class="bg-white rounded-2xl border border-border shadow-sm overflow-hidden">
                 <div class="bg-primary px-6 py-4">
                     <h3 class="text-white font-semibold text-base">Changer le mot de passe</h3>
                     <p class="text-blue-200 text-xs mt-0.5">Assurez-vous d'utiliser un mot de passe sécurisé</p>
                 </div>
-                <form method="POST" action="{{ route('password.update') }}" class="px-6 py-6 space-y-4">
+                <form method="POST" action="{{ route('password.update') }}" class="px-4 lg:px-6 py-6 space-y-4">
                     @csrf @method('PUT')
                     @if($errors->updatePassword->any())
                         <div class="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl">
@@ -151,7 +147,7 @@
                         <input type="password" name="current_password"
                             class="w-full border border-border rounded-xl px-4 py-2.5 text-sm text-text-dark focus:outline-none focus:ring-2 focus:ring-primary bg-bg-page"/>
                     </div>
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-medium text-text-muted uppercase tracking-wide mb-1.5">Nouveau mot de passe</label>
                             <input type="password" name="password"
@@ -164,13 +160,12 @@
                         </div>
                     </div>
                     <div class="flex justify-end">
-                        <button type="submit" class="px-6 py-2.5 bg-primary hover:bg-primary-light text-white rounded-xl text-sm font-medium transition-colors">
+                        <button type="submit" class="w-full sm:w-auto px-6 py-2.5 bg-primary hover:bg-primary-light text-white rounded-xl text-sm font-medium transition-colors">
                             Mettre à jour
                         </button>
                     </div>
                 </form>
             </div>
-
         </div>
     </div>
 

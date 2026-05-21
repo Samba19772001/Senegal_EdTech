@@ -51,6 +51,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/eleves/{id}', [EleveController::class, 'update'])->name('eleves.update');
     Route::delete('/eleves/{id}', [EleveController::class, 'destroy'])->name('eleves.destroy');
     Route::post('/eleves/import', [EleveController::class, 'import'])->name('eleves.import');
+    Route::get('/eleves/suggestions', [EleveController::class, 'suggestions']);
 
     Route::get('/matieres', [MatiereController::class, 'index'])->name('matieres.index');
     Route::post('/matieres', [MatiereController::class, 'store'])->name('matieres.store');

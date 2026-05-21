@@ -39,7 +39,7 @@
                 </svg>
             </div>
             <h1 class="text-2xl font-bold text-text-dark">Senegal EdTech</h1>
-            <p class="text-text-muted text-sm mt-1">Primary Education Portal</p>
+            <p class="text-text-muted text-sm mt-1">Portail de l'enseignement primaire</p>
         </div>
 
         {{-- Card --}}

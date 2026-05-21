@@ -14,12 +14,11 @@
         </div>
     @endif
 
-    <div class="grid grid-cols-3 gap-5">
+    {{-- grid-cols-1 mobile, grid-cols-3 desktop --}}
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
 
         @foreach([1, 2, 3] as $trimestre)
-        @php
-            $composition = $compositions->get($trimestre)?->first();
-        @endphp
+        @php $composition = $compositions->get($trimestre)?->first(); @endphp
 
         @if($composition)
             @php
@@ -87,13 +86,11 @@
 
                     @if($peutGenererBulletin)
                         <a href="{{ route('bulletins.generer', $composition->id) }}"
-                            class="flex-1 text-center bg-primary text-white hover:bg-primary-light py-2 rounded-xl text-xs font-medium transition-colors {{ !$estComplet ? 'ring-1 ring-amber-400' : '' }}"
-                            title="{{ !$estComplet ? 'Notes incomplètes — bulletin généré avec les notes disponibles' : 'Générer les bulletins PDF' }}">
+                            class="flex-1 text-center bg-primary text-white hover:bg-primary-light py-2 rounded-xl text-xs font-medium transition-colors {{ !$estComplet ? 'ring-1 ring-amber-400' : '' }}">
                             Bulletins PDF @if(!$estComplet)<span class="opacity-75">⚠</span>@endif
                         </a>
                     @else
-                        <span class="flex-1 text-center bg-gray-100 text-text-muted cursor-not-allowed py-2 rounded-xl text-xs font-medium"
-                              title="Saisissez au moins une note pour générer les bulletins">
+                        <span class="flex-1 text-center bg-gray-100 text-text-muted cursor-not-allowed py-2 rounded-xl text-xs font-medium">
                             Bulletins PDF
                         </span>
                     @endif
@@ -117,7 +114,7 @@
         @endif
 
         @endforeach
-
+        
     </div>
 
 @endsection
