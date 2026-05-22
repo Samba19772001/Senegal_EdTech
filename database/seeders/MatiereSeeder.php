@@ -9,68 +9,88 @@ class MatiereSeeder extends Seeder
 {
     public function run(): void
     {
-        // CI et CP — tout sur 10
-        $niveauxSur10 = ['CI', 'CP'];
-        $matieresSur10 = [
-            'Lecture', 'Écriture', 'Calcul', 'Langage',
-            'Récitation', 'Dessin', 'Chant'
+        $niveaux = [
+
+            'CI' => [
+                'Lecture'    => 10,
+                'Écriture'   => 10,
+                'Calcul'     => 10,
+                'Récitation' => 10,
+                'Dessin'     => 10,
+                'Chant'      => 10,
+            ],
+
+            'CP' => [
+                'Lecture'    => 10,
+                'Écriture'   => 10,
+                'Calcul'     => 10,
+                'Récitation' => 10,
+                'Dessin'     => 10,
+                'Chant'      => 10,
+            ],
+
+            'CE1' => [
+                // ✏️ Mets tes matières ici
+                'Mots Familier'         => 10,
+                'Mots Inventés'         => 10,
+                'Fluidité'              => 10,
+                'LC / Ressources'       => 20,
+                'LC / Compétence'       => 20,
+                'Maths / Ressources'    => 40,
+                'Maths / Compétence'    => 20,
+                'DM / Ressources'       => 24,
+	            'DM / Compétence'       => 16,
+                'EDD / Ressources'      => 24,
+	            'EDD / Compétence'      => 16,
+                'Éducation Artistique'  => 10,
+                'Arabe'                 => 10,
+            ],
+
+            'CE2' => [
+                // ✏️ Mets tes matières ici
+                'LC / Ressources'       => 40,
+	            'LC / Compétence'       => 60,
+                'Maths / Ressources'    => 40,
+	            'Maths / Compétence'    => 60,
+                'DM / Ressources'       => 24,
+	            'DM / Compétence'       => 16,
+                'EDD / Ressources'      => 24,
+	            'EDD / Compétence'      => 16,
+                'Éducation Artistique'  => 10,
+                'Arabe'                 => 10,
+            ],
+
+            'CM1' => [
+                'LC / Ressources'       => 20,
+	            'LC / Compétence'       => 20,
+                'Maths / Ressources'    => 40,
+	            'Maths / Compétence'    => 20,
+                'DM / Ressources'       => 24,
+	            'DM / Compétence'       => 16,
+                'EDD / Ressources'      => 24,
+	            'EDD / Compétence'      => 16,
+                'Éducation Artistique'  => 10,
+                'Arabe'                 => 10,
+            ],
+
+            'CM2' => [
+                'LC / Ressources'       => 40,
+	            'LC / Compétence'       => 60,
+                'Maths / Ressources'    => 40,
+	            'Maths / Compétence'    => 60,
+                'DM / Ressources'       => 24,
+	            'DM / Compétence'       => 16,
+                'EDD / Ressources'      => 24,
+	            'EDD / Compétence'      => 16,
+                'Éducation Artistique'  => 10,
+                'Arabe'                 => 10,
+            ],
+
         ];
 
-        foreach ($niveauxSur10 as $niveau) {
-            foreach ($matieresSur10 as $index => $nom) {
-                Matiere::create([
-                    'user_id'       => null,
-                    'classe_niveau' => $niveau,
-                    'nom'           => $nom,
-                    'note_sur'      => 10,
-                    'is_default'    => true,
-                    'ordre'         => $index + 1,
-                ]);
-            }
-        }
-
-        // CE1 et CE2
-        $niveauxCE = ['CE1', 'CE2'];
-        $matieresCE = [
-            'Français'           => 40,
-            'Mathématiques'      => 40,
-            'Histoire-Géographie'=> 20,
-            'Sciences'           => 20,
-            'Éducation Civique'  => 10,
-            'Dessin'             => 10,
-            'Sport'              => 10,
-        ];
-
-        foreach ($niveauxCE as $niveau) {
+        foreach ($niveaux as $niveau => $matieres) {
             $index = 1;
-            foreach ($matieresCE as $nom => $noteSur) {
-                Matiere::create([
-                    'user_id'       => null,
-                    'classe_niveau' => $niveau,
-                    'nom'           => $nom,
-                    'note_sur'      => $noteSur,
-                    'is_default'    => true,
-                    'ordre'         => $index++,
-                ]);
-            }
-        }
-
-        // CM1 et CM2
-        $niveauxCM = ['CM1', 'CM2'];
-        $matieresCM = [
-            'Français'           => 40,
-            'Mathématiques'      => 40,
-            'Histoire-Géographie'=> 20,
-            'Sciences'           => 20,
-            'Éducation Civique'  => 10,
-            'Anglais'            => 20,
-            'Dessin'             => 10,
-            'Sport'              => 10,
-        ];
-
-        foreach ($niveauxCM as $niveau) {
-            $index = 1;
-            foreach ($matieresCM as $nom => $noteSur) {
+            foreach ($matieres as $nom => $noteSur) {
                 Matiere::create([
                     'user_id'       => null,
                     'classe_niveau' => $niveau,

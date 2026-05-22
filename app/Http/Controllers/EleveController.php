@@ -29,6 +29,10 @@ class EleveController extends Controller
             ->orderBy('nom')
             ->orderBy('prenom');
 
+        if ($request->eleve_id) {
+            $query->where('id', $request->eleve_id);
+        }
+
         if ($request->classe_id) {
             $query->where('classe_id', $request->classe_id);
         }
@@ -50,6 +54,7 @@ class EleveController extends Controller
         return view('eleves.index', compact(
             'eleves', 'classes', 'classeUser', 'totalGarcons', 'totalFilles'
         ));
+        
     }
 
     public function store(Request $request)
@@ -136,28 +141,16 @@ class EleveController extends Controller
 
     public function suggestions(Request $request)
     {
-        try {
+        $q = $request->get('q');
 
-            $q = $request->get('q');
-
-            if (!$q) {
-                return response()->json([]);
-            }
-
-            $eleves = Eleve::query()
-                ->where('nom', 'LIKE', "%{$q}%")
-                ->orWhere('prenom', 'LIKE', "%{$q}%")
-                ->limit(8)
-                ->get(['id', 'nom', 'prenom']);
-
-            return response()->json($eleves);
-
-        } catch (\Throwable $e) {
-
-            return response()->json([
-                'error' => true,
-                'message' => $e->getMessage()
-            ], 500);
-        }
+        return Eleve::where('user_id', auth()->id())
+            ->where(function ($query) use ($q) {
+                $query->where('nom', 'like', "%{$q}%")
+                    ->orWhere('prenom', 'like', "%{$q}%")
+                    ->orWhere('matricule', 'like', "%{$q}%");
+            })
+            ->orderBy('nom')
+            ->limit(10)
+            ->get(['id','nom','prenom']);
     }
 }

@@ -407,7 +407,8 @@
         document.getElementById('modalEdit').classList.remove('flex');
     }
 
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function () 
+    {
 
         const input = document.getElementById('searchInput');
         const box = document.getElementById('suggestionsBox');
@@ -422,51 +423,62 @@
 
             const query = this.value.trim();
 
-            if (query.length < 1) {
+            if (query.length < 2) {
                 box.classList.add('hidden');
                 box.innerHTML = '';
                 return;
             }
 
-            timer = setTimeout(() => {
+            timer = setTimeout(async () => {
 
-                fetch(`/eleves/suggestions?q=${encodeURIComponent(query)}`)
-                    .then(async res => {
+                try {
+                    const res = await fetch(`/eleves/suggestions?q=${encodeURIComponent(query)}`);
 
-                        if (!res.ok) {
-                            console.error('Erreur backend suggestions');
-                            return [];
-                        }
+                    if (!res.ok) {
+                        console.error('Erreur backend:', res.status);
+                        return;
+                    }
 
-                        return await res.json();
-                    })
-                    .then(data => {
+                    const data = await res.json();
 
-                        if (!Array.isArray(data)) return;
-
-                        if (!data.length) {
-                            box.classList.add('hidden');
-                            return;
-                        }
-
-                        box.innerHTML = data.map(e => `
-                            <div class="px-4 py-2 hover:bg-gray-100 cursor-pointer suggestion-item">
-                                ${e.prenom} ${e.nom}
-                            </div>
-                        `).join('');
-
+                    if (!Array.isArray(data) || data.length === 0) {
+                        box.innerHTML = `<div class="px-4 py-2 text-sm text-gray-400">Aucun élève trouvé</div>`;
                         box.classList.remove('hidden');
-                    })
-                    .catch(err => console.error(err));
+                        return;
+                    }
 
-            }, 250); // debounce
+                    box.innerHTML = data.map(e => `
+                        <div class="px-4 py-2 hover:bg-gray-100 cursor-pointer suggestion-item"
+                            data-nom="${e.nom}" data-prenom="${e.prenom}">
+                            ${e.prenom} ${e.nom}
+                        </div>
+                    `).join('');
+
+                    box.classList.remove('hidden');
+
+                    // click sur suggestion
+                    document.querySelectorAll('.suggestion-item').forEach(item => {
+                        item.addEventListener('click', () => {
+                            input.value = item.dataset.prenom + ' ' + item.dataset.nom;
+                            box.classList.add('hidden');
+
+                            // recharge recherche Laravel
+                            window.location.href = `/eleves?search=${encodeURIComponent(input.value)}`;
+                        });
+                    });
+
+                } catch (err) {
+                    console.error('Fetch error:', err);
+                }
+
+            }, 250);
         });
 
-        document.addEventListener('click', function (e) {
-            if (!box.contains(e.target) && e.target !== input) {
-                box.classList.add('hidden');
-            }
+        div.addEventListener('click', () => {
+            window.location.href = `/eleves?eleve_id=${eleve.id}`;
         });
     });
+
+    
 </script>
 @endpush

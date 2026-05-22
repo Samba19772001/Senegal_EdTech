@@ -227,26 +227,28 @@
             <div class="bg-white rounded-2xl border border-border p-5 lg:p-6 shadow-sm">
                 <h3 class="font-bold text-base text-text-dark mb-4">Résumé par trimestre</h3>
                 <div class="space-y-3">
-                    @foreach([1, 2, 3] as $t)
-                    @php
-                        $comp = auth()->user()->compositions()->where('trimestre', $t)->first();
-                        $moy  = $comp ? \App\Models\Bulletin::where('composition_id', $comp->id)->avg('moyenne_generale') : null;
-                        $nb   = $comp ? \App\Models\Bulletin::where('composition_id', $comp->id)->count() : 0;
-                    @endphp
-                    <div class="flex items-center justify-between py-2 border-b border-border last:border-0">
-                        <div class="flex items-center gap-2">
-                            <div class="w-2.5 h-2.5 rounded-full {{ $moy ? 'bg-green-500' : 'bg-gray-300' }}"></div>
-                            <span class="text-sm text-text-muted">Trimestre {{ $t }}</span>
+                    @foreach([1,2,3] as $t)
+                        @php
+                            $data = $trimestres[$t] ?? null;
+                        @endphp
+
+                        <div class="flex items-center justify-between py-2 border-b border-border last:border-0">
+                            <div class="flex items-center gap-2">
+                                <div class="w-2.5 h-2.5 rounded-full {{ $data ? 'bg-green-500' : 'bg-gray-300' }}"></div>
+                                <span class="text-sm text-text-muted">Trimestre {{ $t }}</span>
+                            </div>
+
+                            <div class="flex items-center gap-3">
+                                @if($data)
+                                    <span class="text-xs text-text-muted">{{ $data->total }} bulletins</span>
+                                    <span class="text-sm font-bold text-primary">
+                                        {{ number_format($data->moyenne, 2) }}/10
+                                    </span>
+                                @else
+                                    <span class="text-xs text-gray-400">Non commencé</span>
+                                @endif
+                            </div>
                         </div>
-                        <div class="flex items-center gap-2 lg:gap-3">
-                            @if($moy)
-                                <span class="text-xs text-text-muted hidden sm:inline">{{ $nb }} bulletins</span>
-                                <span class="text-sm font-bold text-primary">{{ number_format($moy, 2) }}/10</span>
-                            @else
-                                <span class="text-xs text-gray-400">Non commencé</span>
-                            @endif
-                        </div>
-                    </div>
                     @endforeach
                 </div>
             </div>
