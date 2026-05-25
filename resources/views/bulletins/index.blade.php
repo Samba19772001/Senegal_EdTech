@@ -8,7 +8,7 @@
 <style>
     .stats-grid { grid-template-columns: repeat(1, 1fr); }
     @media (min-width: 630px)  { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
-    @media (min-width: 630px) { .stats-grid { grid-template-columns: repeat(4, 1fr); } }
+    @media (min-width: 1024px) { .stats-grid { grid-template-columns: repeat(4, 1fr); } }
 </style>
 @endpush
 
@@ -128,7 +128,7 @@
             </div>
 
             <div class="overflow-x-auto">
-                <table class="w-full" style="min-width: 380px;">
+                <table class="w-full" style="min-width: 300px;">
                     <thead>
                         <tr class="bg-primary-bg">
                             <th class="text-left px-4 py-3 text-xs font-semibold text-text-muted uppercase tracking-widest">Élève</th>
@@ -144,34 +144,45 @@
                             $couleurs     = ['blue', 'pink', 'orange', 'purple', 'green', 'red', 'indigo', 'amber'];
                             $couleur      = $couleurs[$bulletin->eleve->id % count($couleurs)];
                             $mentionColors = [
-                                'Très Bien'   => 'bg-green-50 text-green-700',
-                                'Bien'        => 'bg-blue-50 text-blue-700',
-                                'Assez Bien'  => 'bg-indigo-50 text-indigo-700',
-                                'Passable'    => 'bg-amber-50 text-amber-700',
-                                'Insuffisant' => 'bg-red-50 text-red-700',
+                                'Très Bien'   => 'bg-green-100 text-green-800 border border-green-200',
+                                'Bien'        => 'bg-blue-100 text-blue-800 border border-blue-200',
+                                'Assez Bien'  => 'bg-indigo-100 text-indigo-800 border border-indigo-200',
+                                'Passable'    => 'bg-amber-100 text-amber-800 border border-amber-200',
+                                'Insuffisant' => 'bg-red-100 text-red-800 border border-red-200',
                             ];
                             $mentionClass = $mentionColors[$bulletin->mention] ?? 'bg-gray-50 text-gray-700';
                         @endphp
                         <tr class="hover:bg-bg-page transition-colors">
+
+                            {{-- Élève + Mention sous le nom --}}
                             <td class="px-4 py-3.5">
                                 <div class="flex items-center gap-2">
                                     <div class="w-8 h-8 rounded-full bg-{{ $couleur }}-100 text-{{ $couleur }}-700 text-xs font-bold flex items-center justify-center flex-shrink-0">
                                         {{ $initiales }}
                                     </div>
                                     <div>
-                                        <p class="text-sm font-semibold text-text-dark">{{ $bulletin->eleve->prenom }} {{ $bulletin->eleve->nom }}</p>
-                                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full {{ $mentionClass }}">{{ $bulletin->mention }}</span>
+                                        <p class="text-sm font-semibold text-text-dark leading-tight">
+                                            {{ $bulletin->eleve->prenom }} {{ $bulletin->eleve->nom }}
+                                        </p>
+                                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full {{ $mentionClass }} mt-0.5 inline-block">
+                                            {{ $bulletin->mention }}
+                                        </span>
                                     </div>
                                 </div>
                             </td>
+
                             <td class="px-3 py-3.5 text-center">
-                                <span class="text-sm font-bold text-primary">{{ number_format($bulletin->moyenne_generale, 2) }}/10</span>
+                                <span class="text-sm font-bold text-primary whitespace-nowrap">
+                                    {{ number_format($bulletin->moyenne_generale, 2) }}/10
+                                </span>
                             </td>
+
                             <td class="px-3 py-3.5 text-center">
                                 <span class="w-7 h-7 rounded-full bg-primary-bg text-primary text-sm font-bold inline-flex items-center justify-center">
                                     {{ $bulletin->rang }}
                                 </span>
                             </td>
+
                             <td class="px-3 py-3.5 text-center">
                                 <a href="{{ route('bulletins.download', $bulletin->id) }}"
                                     class="w-7 h-7 flex items-center justify-center rounded-lg border border-border hover:bg-green-50 hover:text-green-600 hover:border-green-200 transition-colors text-text-muted mx-auto">

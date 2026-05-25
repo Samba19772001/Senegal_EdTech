@@ -430,7 +430,7 @@ if (searchInput) {
                                     <p class="text-xs text-gray-400">${eleve.classe ?? '—'}</p>
                                 </div>`;
                             div.addEventListener('click', () => {
-                                window.location.href = `/eleves?search=${encodeURIComponent(eleve.prenom + ' ' + eleve.nom)}`;
+                                window.location.href = `/eleves/${eleve.id}/profil`;
                             });
                             searchList.appendChild(div);
                         });

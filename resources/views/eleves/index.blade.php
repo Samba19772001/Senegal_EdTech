@@ -407,20 +407,16 @@
         document.getElementById('modalEdit').classList.remove('flex');
     }
 
-    document.addEventListener('DOMContentLoaded', function () 
-    {
-
+    document.addEventListener('DOMContentLoaded', function () {
         const input = document.getElementById('searchInput');
-        const box = document.getElementById('suggestionsBox');
+        const box   = document.getElementById('suggestionsBox');
 
         if (!input || !box) return;
 
         let timer = null;
 
         input.addEventListener('input', function () {
-
             clearTimeout(timer);
-
             const query = this.value.trim();
 
             if (query.length < 2) {
@@ -430,15 +426,8 @@
             }
 
             timer = setTimeout(async () => {
-
                 try {
-                    const res = await fetch(`/eleves/suggestions?q=${encodeURIComponent(query)}`);
-
-                    if (!res.ok) {
-                        console.error('Erreur backend:', res.status);
-                        return;
-                    }
-
+                    const res  = await fetch(`/eleves/suggestions?q=${encodeURIComponent(query)}`);
                     const data = await res.json();
 
                     if (!Array.isArray(data) || data.length === 0) {
@@ -448,34 +437,33 @@
                     }
 
                     box.innerHTML = data.map(e => `
-                        <div class="px-4 py-2 hover:bg-gray-100 cursor-pointer suggestion-item"
-                            data-nom="${e.nom}" data-prenom="${e.prenom}">
-                            ${e.prenom} ${e.nom}
+                        <div class="px-4 py-2.5 hover:bg-primary-bg cursor-pointer suggestion-item flex items-center gap-3 border-b border-gray-50 last:border-0"
+                            data-id="${e.id}">
+                            <div class="w-7 h-7 rounded-full bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center flex-shrink-0">
+                                ${e.prenom[0]}${e.nom[0]}
+                            </div>
+                            <span class="text-sm font-medium text-gray-800">${e.prenom} ${e.nom}</span>
                         </div>
                     `).join('');
 
                     box.classList.remove('hidden');
 
-                    // click sur suggestion
                     document.querySelectorAll('.suggestion-item').forEach(item => {
                         item.addEventListener('click', () => {
-                            input.value = item.dataset.prenom + ' ' + item.dataset.nom;
-                            box.classList.add('hidden');
-
-                            // recharge recherche Laravel
-                            window.location.href = `/eleves?search=${encodeURIComponent(input.value)}`;
+                            window.location.href = `/eleves/${item.dataset.id}/profil`;
                         });
                     });
 
                 } catch (err) {
                     console.error('Fetch error:', err);
                 }
-
             }, 250);
         });
 
-        div.addEventListener('click', () => {
-            window.location.href = `/eleves?eleve_id=${eleve.id}`;
+        document.addEventListener('click', (e) => {
+            if (!input.contains(e.target) && !box.contains(e.target)) {
+                box.classList.add('hidden');
+            }
         });
     });
 

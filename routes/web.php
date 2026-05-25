@@ -10,6 +10,7 @@ use App\Http\Controllers\CompositionController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\BulletinController;
 use App\Http\Controllers\ParametreController;
+use App\Http\Controllers\MoyenneManuellController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -37,7 +38,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 });
 
 // Routes utilisateurs normaux
-Route::middleware('auth')->group(function () {
+    Route::middleware('auth')->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -100,6 +101,13 @@ Route::middleware('auth')->group(function () {
             ]);
         return response()->json($eleves);
     })->name('search.eleves');
+
+
+    Route::get('/compositions/{composition}/moyennes-manuelles', [MoyenneManuellController::class, 'index'])->name('moyennes.manuelles.index');
+    Route::post('/compositions/{composition}/moyennes-manuelles', [MoyenneManuellController::class, 'store'])->name('moyennes.manuelles.store');
+
+    Route::get('/eleves/{id}/profil', [EleveController::class, 'profil'])->name('eleves.profil');
+    Route::get('/eleves/suggestions', [EleveController::class, 'suggestions'])->name('eleves.suggestions');
 });
 
 require __DIR__.'/auth.php';

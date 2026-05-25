@@ -85,7 +85,11 @@
                     @endif
 
                     @if($peutGenererBulletin)
-                        <a href="{{ route('bulletins.generer', $composition->id) }}"
+                        @if($composition->trimestre == 3)
+                            <a href="{{ route('moyennes.manuelles.index', $composition->id) }}"
+                        @else
+                            <a href="{{ route('bulletins.generer', $composition->id) }}"
+                        @endif
                             class="flex-1 text-center bg-primary text-white hover:bg-primary-light py-2 rounded-xl text-xs font-medium transition-colors {{ !$estComplet ? 'ring-1 ring-amber-400' : '' }}">
                             Bulletins PDF @if(!$estComplet)<span class="opacity-75">⚠</span>@endif
                         </a>

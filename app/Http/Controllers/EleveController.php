@@ -141,16 +141,79 @@ class EleveController extends Controller
 
     public function suggestions(Request $request)
     {
-        $q = $request->get('q');
-
-        return Eleve::where('user_id', auth()->id())
-            ->where(function ($query) use ($q) {
+        $q = $request->get('q', '');
+        $eleves = Eleve::where('user_id', auth()->id())
+            ->where(function($query) use ($q) {
                 $query->where('nom', 'like', "%{$q}%")
-                    ->orWhere('prenom', 'like', "%{$q}%")
-                    ->orWhere('matricule', 'like', "%{$q}%");
+                    ->orWhere('prenom', 'like', "%{$q}%");
             })
-            ->orderBy('nom')
-            ->limit(10)
-            ->get(['id','nom','prenom']);
+            ->limit(6)
+            ->get()
+            ->map(fn($e) => [
+                'id'     => $e->id,
+                'nom'    => $e->nom,
+                'prenom' => $e->prenom,
+            ]);
+
+        return response()->json($eleves);
+    }
+
+    public function profil($id)
+    {
+        $eleve = Eleve::where('user_id', auth()->id())
+            ->with('classe')
+            ->findOrFail($id);
+
+        $user = auth()->user();
+
+        // Récupérer la classe active
+        $classeActive = $user->classes()
+            ->where('annee_scolaire', $user->annee_scolaire)
+            ->latest()->first();
+
+        // Compositions de la classe active
+        $compositions = \App\Models\Composition::where('user_id', $user->id)
+            ->where('classe_id', $classeActive?->id)
+            ->orderBy('trimestre')
+            ->get();
+
+        $moyenneService = new \App\Services\MoyenneService();
+
+        $trimestres = [];
+        foreach ($compositions as $composition) {
+            $notes = $eleve->notes()
+                ->where('composition_id', $composition->id)
+                ->with('matiere')
+                ->get();
+
+            $moyenne = null;
+            $rang    = null;
+
+            if ($notes->whereNotNull('note')->count() > 0) {
+                $moyenne = $moyenneService->calculerMoyenneEleve($eleve, $composition);
+                $classement = $moyenneService->calculerClassement($composition);
+                $rang = $classement->firstWhere('eleve.id', $eleve->id)['rang'] ?? null;
+            } else {
+                // Vérifier moyenne manuelle
+                $mm = \App\Models\MoyenneManuelle::where('user_id', $user->id)
+                    ->where('eleve_id', $eleve->id)
+                    ->where('trimestre', $composition->trimestre)
+                    ->first();
+                if ($mm) $moyenne = $mm->moyenne;
+            }
+
+            $trimestres[$composition->trimestre] = [
+                'composition' => $composition,
+                'notes'       => $notes,
+                'moyenne'     => $moyenne,
+                'rang'        => $rang,
+                'mention'     => $moyenne !== null ? $moyenneService->getMention($moyenne) : null,
+            ];
+        }
+
+        // Moyenne annuelle
+        $moyenneAnnuelle = $moyenneService->calculerMoyenneAnnuelle($eleve);
+
+        return view('eleves.profil', compact('eleve', 'trimestres', 'moyenneAnnuelle'));
     }
 }

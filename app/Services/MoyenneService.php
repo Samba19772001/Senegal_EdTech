@@ -68,20 +68,39 @@ class MoyenneService
 
     public function calculerMoyenneAnnuelle(Eleve $eleve): ?float
     {
-        $compositions = $eleve->user->compositions()
+        $classeActive = $eleve->user->classes()
+            ->where('annee_scolaire', $eleve->user->annee_scolaire)
+            ->latest()
+            ->first();
+
+        if (!$classeActive) return null;
+
+        $compositions = \App\Models\Composition::where('user_id', $eleve->user_id)
+            ->where('classe_id', $classeActive->id)
             ->whereIn('trimestre', [1, 2, 3])
             ->get();
 
         $moyennes = [];
 
         foreach ($compositions as $composition) {
+            // Notes réelles saisies sur la plateforme
             $notes = $eleve->notes()
                 ->where('composition_id', $composition->id)
-                ->whereNotNull('note') // absents exclus
+                ->whereNotNull('note')
                 ->get();
 
             if ($notes->count() > 0) {
-                $moyennes[] = $this->calculerMoyenneEleve($eleve, $composition);
+                $moyennes[$composition->trimestre] = $this->calculerMoyenneEleve($eleve, $composition);
+            } else {
+                // Vérifier si une moyenne manuelle existe pour ce trimestre
+                $moyenneManuelle = \App\Models\MoyenneManuelle::where('user_id', $eleve->user_id)
+                    ->where('eleve_id', $eleve->id)
+                    ->where('trimestre', $composition->trimestre)
+                    ->first();
+
+                if ($moyenneManuelle) {
+                    $moyennes[$composition->trimestre] = $moyenneManuelle->moyenne;
+                }
             }
         }
 

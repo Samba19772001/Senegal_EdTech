@@ -9,6 +9,9 @@ class MatiereSeeder extends Seeder
 {
     public function run(): void
     {
+        // Supprimer les anciennes matières par défaut avant de recréer
+        Matiere::where('is_default', true)->delete();
+
         $niveaux = [
 
             'CI' => [
@@ -61,10 +64,10 @@ class MatiereSeeder extends Seeder
             ],
 
             'CM1' => [
-                'LC / Ressources'       => 20,
-	            'LC / Compétence'       => 20,
+                'LC / Ressources'       => 40,
+	            'LC / Compétence'       => 60,
                 'Maths / Ressources'    => 40,
-	            'Maths / Compétence'    => 20,
+	            'Maths / Compétence'    => 60,
                 'DM / Ressources'       => 24,
 	            'DM / Compétence'       => 16,
                 'EDD / Ressources'      => 24,
