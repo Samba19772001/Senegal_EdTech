@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Matiere;
 use Illuminate\Http\Request;
+use App\Models\Note;
 
 class MatiereController extends Controller
 {
@@ -63,6 +64,9 @@ class MatiereController extends Controller
         $matiere = Matiere::where('user_id', auth()->id())
             ->where('is_default', false)
             ->findOrFail($id);
+
+        // Supprimer toutes les notes liées à cette matière
+        Note::where('matiere_id', $matiere->id)->delete();
 
         $matiere->delete();
         return redirect()->back()->with('success', 'Matière supprimée.');

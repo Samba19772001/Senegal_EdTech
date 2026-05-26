@@ -143,8 +143,10 @@
 
         $toutesLesMatieres = \App\Models\Matiere::where(function($q) use ($niveau) {
             $q->where('is_default', true)->where('classe_niveau', $niveau);
-        })->orWhere(function($q) use ($userId) {   // ← utiliser $userId au lieu de $eleve->user_id
-            $q->where('user_id', $userId)->where('is_default', false);
+        })->orWhere(function($q) use ($userId, $niveau) {  // ← ajouter $niveau
+            $q->where('user_id', $userId)
+            ->where('is_default', false)
+            ->where('classe_niveau', $niveau);
         })->orderBy('ordre')->get();
 
         $notesParMatiere = $notes->keyBy('matiere_id');

@@ -37,8 +37,10 @@ class BulletinService
 
         $toutesLesMatieres = Matiere::where(function($q) use ($niveau) {
             $q->where('is_default', true)->where('classe_niveau', $niveau);
-        })->orWhere(function($q) use ($userId) {
-            $q->where('user_id', $userId)->where('is_default', false);
+        })->orWhere(function($q) use ($userId, $niveau) {  // ← ajouter $niveau ici
+            $q->where('user_id', $userId)
+            ->where('is_default', false)
+            ->where('classe_niveau', $niveau);
         })->orderBy('ordre')->get();
 
         $rangParMatiere = [];
