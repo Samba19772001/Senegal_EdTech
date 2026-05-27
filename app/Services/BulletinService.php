@@ -32,7 +32,7 @@ class BulletinService
             ->get();
 
         // Rang par matière
-        $niveau = $composition->classe->nom;
+        $niveau = $eleve->user->niveau_enseignement;
         $userId = $eleve->user_id;
 
         $toutesLesMatieres = Matiere::where(function($q) use ($niveau) {

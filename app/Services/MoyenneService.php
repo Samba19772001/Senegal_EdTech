@@ -96,8 +96,8 @@ class MoyenneService
                 $moyenneManuelle = \App\Models\MoyenneManuelle::where('user_id', $eleve->user_id)
                     ->where('eleve_id', $eleve->id)
                     ->where('trimestre', $composition->trimestre)
+                    ->where('annee_scolaire', $eleve->user->annee_scolaire) // ← ajout
                     ->first();
-
                 if ($moyenneManuelle) {
                     $moyennes[$composition->trimestre] = $moyenneManuelle->moyenne;
                 }

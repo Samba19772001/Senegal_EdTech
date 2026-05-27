@@ -68,6 +68,7 @@ class MoyenneManuellController extends Controller
                             'user_id'   => auth()->id(),
                             'eleve_id'  => $eleveId,
                             'trimestre' => $trimestre,
+                            'annee_scolaire' => auth()->user()->annee_scolaire,
                         ],
                         [
                             'moyenne' => $moyenne,

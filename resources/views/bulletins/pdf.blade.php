@@ -138,7 +138,7 @@
 
     {{-- TABLEAU DES NOTES --}}
     @php
-        $niveau    = $composition->classe->nom;
+        $niveau    = $eleve->user->niveau_enseignement;
         $userId    = $eleve->user_id;  // ← capturer avant la closure
 
         $toutesLesMatieres = \App\Models\Matiere::where(function($q) use ($niveau) {

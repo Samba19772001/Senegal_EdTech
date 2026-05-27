@@ -194,10 +194,10 @@ class EleveController extends Controller
                 $classement = $moyenneService->calculerClassement($composition);
                 $rang = $classement->firstWhere('eleve.id', $eleve->id)['rang'] ?? null;
             } else {
-                // Vérifier moyenne manuelle
                 $mm = \App\Models\MoyenneManuelle::where('user_id', $user->id)
                     ->where('eleve_id', $eleve->id)
                     ->where('trimestre', $composition->trimestre)
+                    ->where('annee_scolaire', $user->annee_scolaire) // ← ajout
                     ->first();
                 if ($mm) $moyenne = $mm->moyenne;
             }

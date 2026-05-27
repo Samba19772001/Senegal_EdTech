@@ -141,7 +141,8 @@
                     $couleurs  = ['blue', 'pink', 'orange', 'purple', 'green', 'red', 'indigo', 'amber'];
                     $couleur   = $couleurs[$eleve->id % count($couleurs)];
                 @endphp
-                <tr class="hover:bg-bg-page transition-colors">
+                <tr class="hover:bg-bg-page transition-colors cursor-pointer"
+                    onclick="window.location='/eleves/{{ $eleve->id }}/profil'">
                     <td class="px-4 py-3">
                         <div class="flex items-center gap-2">
                             <div class="w-8 h-8 rounded-full bg-{{ $couleur }}-100 text-{{ $couleur }}-700 text-xs font-bold flex items-center justify-center flex-shrink-0">
@@ -167,13 +168,14 @@
                     </td>
                     <td class="px-4 py-3">
                         <div class="flex items-center gap-1.5">
-                            <button onclick="ouvrirModalEdit({{ $eleve->id }}, '{{ addslashes($eleve->nom) }}', '{{ addslashes($eleve->prenom) }}', '{{ $eleve->sexe }}', '{{ $eleve->date_naissance }}', '{{ $eleve->matricule }}')"
+                            <button onclick="event.stopPropagation(); ouvrirModalEdit({{ $eleve->id }}, '{{ addslashes($eleve->nom) }}', '{{ addslashes($eleve->prenom) }}', '{{ $eleve->sexe }}', '{{ $eleve->date_naissance }}', '{{ $eleve->matricule }}')"
                                 class="w-8 h-8 flex items-center justify-center rounded-lg border border-border hover:bg-primary-bg hover:text-primary hover:border-primary transition-colors text-text-muted">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                 </svg>
                             </button>
                             <form method="POST" action="{{ route('eleves.destroy', $eleve->id) }}"
+                                onclick="event.stopPropagation()"
                                 onsubmit="return confirm('Supprimer cet élève ?')">
                                 @csrf @method('DELETE')
                                 <button type="submit" class="w-8 h-8 flex items-center justify-center rounded-lg border border-border hover:bg-red-50 hover:text-red-500 hover:border-red-200 transition-colors text-text-muted">
