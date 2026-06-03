@@ -72,7 +72,10 @@ class BulletinController extends Controller
             return redirect()->back()->withErrors(['pdf' => 'Fichier PDF introuvable.']);
         }
 
-        return response()->download($path);
+        $nomEleve = $bulletin->eleve->prenom . '_' . $bulletin->eleve->nom;
+        $filename = "{$nomEleve}_T{$bulletin->composition->trimestre}.pdf";
+
+        return response()->download($path, $filename);
     }
 
     public function downloadAll($compositionId)
@@ -91,17 +94,16 @@ class BulletinController extends Controller
 
         $zipFilename = "bulletins_T{$composition->trimestre}.zip";
 
-        $options = new \ZipStream\Option\Archive();
-        $options->setSendHttpHeaders(true);
-
-        $zip = new \ZipStream\ZipStream($zipFilename, $options);
-
+        $zip = new \ZipStream\ZipStream(
+            outputName: $zipFilename,
+            sendHttpHeaders: true,
+        );
         foreach ($bulletins as $bulletin) {
             $pdfPath = storage_path('app/' . $bulletin->pdf_path);
             if (file_exists($pdfPath)) {
                 $nomEleve = $bulletin->eleve->prenom . '_' . $bulletin->eleve->nom;
                 $zip->addFileFromPath(
-                    "Bulletin_{$nomEleve}_T{$composition->trimestre}.pdf",
+                    "{$nomEleve}_T{$composition->trimestre}.pdf",
                     $pdfPath
                 );
             }

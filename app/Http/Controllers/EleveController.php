@@ -107,19 +107,24 @@ class EleveController extends Controller
         return redirect()->back()->with('success', 'Élève supprimé.');
     }
 
-    public function import(Request $request)
+        public function import(Request $request)
     {
         $request->validate([
             'fichier'   => ['required', 'file', 'mimes:xlsx,xls'],
             'classe_id' => ['required', 'exists:classes,id'],
         ]);
 
-        Excel::import(
-            new ElevesImport(auth()->id(), $request->classe_id),
+        $import = new \App\Imports\ElevesImport(auth()->id(), $request->classe_id);
+
+        \Maatwebsite\Excel\Facades\Excel::import(
+            $import,
             $request->file('fichier')
         );
 
-        return redirect()->back()->with('success', 'Élèves importés avec succès.');
+        return redirect()->back()->with([
+            'success' => "Import terminé : {$import->successCount} élèves ajoutés.",
+            'errors'  => $import->errors
+        ]);
     }
 
     public function destroyAll()
