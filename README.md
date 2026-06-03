@@ -1,59 +1,313 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 📚 Senegal EdTech — Portail de l'Enseignement Primaire
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+![Laravel](https://img.shields.io/badge/Laravel-12.x-red?style=flat-square&logo=laravel)
+![PHP](https://img.shields.io/badge/PHP-8.2-blue?style=flat-square&logo=php)
+![MySQL](https://img.shields.io/badge/MySQL-8.0-orange?style=flat-square&logo=mysql)
+![Tailwind CSS](https://img.shields.io/badge/TailwindCSS-3.x-38bdf8?style=flat-square&logo=tailwindcss)
+![License](https://img.shields.io/badge/License-Tous%20droits%20r%C3%A9serv%C3%A9s-red?style=flat-square)
 
-## About Laravel
+> Solution digitale de gestion pédagogique dédiée aux enseignants du primaire au Sénégal.  
+> Chaque enseignant dispose de son propre espace sécurisé pour gérer ses élèves, saisir les notes et générer les bulletins PDF.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 📋 Table des matières
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- [Présentation](#-présentation)
+- [Fonctionnalités](#-fonctionnalités)
+- [Stack technique](#-stack-technique)
+- [Prérequis](#-prérequis)
+- [Installation](#-installation)
+- [Configuration](#-configuration)
+- [Structure du projet](#-structure-du-projet)
+- [Règles métier](#-règles-métier)
+- [Auteur](#-auteur)
+- [Licence](#-licence)
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## 🎯 Présentation
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+**Senegal EdTech** est une application web Laravel permettant aux enseignants du primaire de :
 
-## Laravel Sponsors
+- Gérer leurs élèves de manière autonome
+- Saisir les notes par matière et par trimestre
+- Calculer automatiquement les moyennes (ramenées sur 10)
+- Générer des bulletins PDF professionnels
+- Suivre les performances de la classe tout au long de l'année
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Chaque enseignant dispose d'un **compte indépendant** — les données sont strictement isolées entre utilisateurs.
 
-### Premium Partners
+---
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## ✨ Fonctionnalités
 
-## Contributing
+### 👤 Gestion des enseignants
+- Inscription avec informations personnelles, professionnelles et pédagogiques
+- Connexion sécurisée (Laravel Breeze)
+- Modification du profil et changement de mot de passe
+- Gestion du changement d'année scolaire
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 👥 Gestion des élèves
+- Ajout manuel (nom, prénom, sexe, date de naissance, matricule)
+- Import en masse via fichier Excel (.xlsx)
+- Recherche avec autocomplétion en temps réel
+- Fiche élève avec historique des notes et moyennes
+- Suppression individuelle ou en masse
 
-## Code of Conduct
+### 📖 Gestion des matières
+- Matières prédéfinies par niveau (CI, CP, CE1, CE2, CM1, CM2)
+- Ajout de matières personnalisées
+- Configuration du barème (`note_sur`) par matière
+- Toutes les notes sont ramenées sur 10 pour le calcul des moyennes
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### ✏️ Saisie des notes
+- Saisie par matière avec liste des élèves automatique
+- Navigation automatique vers la matière suivante après validation
+- Possibilité de marquer un élève absent
+- Calcul en temps réel de la note ramenée sur 10
+- Mise à jour possible (re-saisie)
 
-## Security Vulnerabilities
+### 📊 Calcul automatique
+- Moyenne par matière ramenée sur 10 : `note × 10 ÷ note_sur`
+- Coefficient = 1 pour toutes les matières
+- Classement automatique des élèves
+- Mentions : Insuffisant / Passable / Assez Bien / Bien / Très Bien
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### 📄 Bulletins PDF
+- Génération en un clic pour tous les élèves
+- En-tête personnalisé (école, région, classe, année scolaire)
+- Tableau des notes avec appréciation par matière
+- Moyenne générale, rang, mention, moyenne de classe
+- Bilan annuel au 3ème trimestre (moyenne annuelle + décision du conseil)
+- Téléchargement individuel ou collectif
 
-## License
+### 📅 Bilan annuel (T3)
+- Calcul de la moyenne annuelle sur les trimestres effectivement saisis
+- Si un trimestre précédent manque : saisie manuelle des moyennes
+- Décision du conseil : **Passe en classe supérieure** / **Redouble**
+- Rang annuel calculé automatiquement
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### 🔔 Autres fonctionnalités
+- Alertes (notes incomplètes, bulletins non générés)
+- Guide d'aide rapide intégré
+- Historique des années scolaires
+- Interface responsive (mobile, tablette, desktop)
+- Page À propos et Paramètres
+
+---
+
+## 🛠 Stack technique
+
+| Technologie | Version | Rôle |
+|-------------|---------|------|
+| **Laravel** | 12.x | Backend + Frontend (MVC) |
+| **PHP** | 8.2 | Langage serveur |
+| **MySQL** | 8.0 | Base de données |
+| **Tailwind CSS** | CDN | Design & Interface |
+| **Laravel Breeze** | — | Authentification |
+| **DomPDF** | barryvdh/laravel-dompdf | Génération PDF |
+| **Laravel Excel** | maatwebsite/excel | Import Excel |
+
+---
+
+## ✅ Prérequis
+
+- PHP >= 8.2
+- Composer >= 2.x
+- Node.js >= 18.x & npm
+- MySQL >= 8.0
+- XAMPP / Laragon / Wamp (Windows) ou équivalent
+
+---
+
+## 🚀 Installation
+
+### 1. Cloner le projet
+
+```bash
+git clone https://github.com/votre-username/Senegal_EdTech.git
+cd Senegal_EdTech
+```
+
+### 2. Installer les dépendances PHP
+
+```bash
+composer install
+```
+
+### 3. Installer les dépendances JS
+
+```bash
+npm install
+```
+
+### 4. Copier le fichier d'environnement
+
+```bash
+cp .env.example .env
+```
+
+### 5. Générer la clé d'application
+
+```bash
+php artisan key:generate
+```
+
+### 6. Configurer la base de données
+
+Créer une base de données MySQL nommée `senegal_edtech`, puis modifier le fichier `.env` :
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=senegal_edtech
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+### 7. Lancer les migrations
+
+```bash
+php artisan migrate
+```
+
+### 8. Insérer les matières par défaut
+
+```bash
+php artisan db:seed --class=MatiereSeeder
+```
+
+### 9. Compiler les assets
+
+```bash
+npm run dev
+```
+
+### 10. Démarrer le serveur
+
+```bash
+php artisan serve
+```
+
+Accéder à l'application : **http://localhost:8000**
+
+---
+
+## ⚙️ Configuration
+
+### Session (dans `.env`)
+
+```env
+SESSION_DRIVER=file
+```
+
+### Stockage des bulletins PDF
+
+Les bulletins sont sauvegardés dans `storage/app/bulletins/`.  
+Assurez-vous que ce dossier est accessible en écriture.
+
+---
+
+## 📁 Structure du projet
+
+```
+app/
+├── Http/
+│   ├── Controllers/
+│   │   ├── AuthController (via Breeze)
+│   │   ├── DashboardController.php
+│   │   ├── ClasseController.php
+│   │   ├── EleveController.php
+│   │   ├── MatiereController.php
+│   │   ├── CompositionController.php
+│   │   ├── NoteController.php
+│   │   ├── BulletinController.php
+│   │   ├── MoyenneManuellController.php
+│   │   └── ParametreController.php
+│   └── Requests/
+├── Models/
+│   ├── User.php
+│   ├── Classe.php
+│   ├── Eleve.php
+│   ├── Matiere.php
+│   ├── Composition.php
+│   ├── Note.php
+│   ├── Bulletin.php
+│   └── MoyenneManuelle.php
+├── Services/
+│   ├── MoyenneService.php
+│   ├── BulletinService.php
+│   └── ImportEleveService.php
+└── Imports/
+    └── ElevesImport.php
+
+database/
+├── migrations/
+└── seeders/
+    └── MatiereSeeder.php
+
+resources/views/
+├── layouts/app.blade.php
+├── auth/ (login, register)
+├── dashboard.blade.php
+├── eleves/ (index, profil)
+├── matieres/
+├── compositions/ (index, notes, moyennes_manuelles)
+├── bulletins/ (index, pdf, pdf_all)
+├── notes/
+├── profile/
+├── parametres/
+└── apropos/
+```
+
+---
+
+## 📐 Règles métier
+
+| Règle | Détail |
+|-------|--------|
+| **Coefficients** | Tous égaux à 1 — pas de pondération |
+| **Calcul de la note** | `note_ramenee = note × 10 ÷ note_sur` |
+| **Moyenne générale** | `Σ(notes_ramenees) ÷ nb_matieres` — toujours sur 10 |
+| **CI / CP** | Toutes les matières notées sur 10 |
+| **CE1 → CM2** | `note_sur` variable selon la matière |
+| **Trimestres** | 3 compositions par an, créées automatiquement |
+| **Unicité** | 1 note par (composition × élève × matière) |
+| **Isolation** | Chaque enseignant ne voit que ses propres données |
+| **Moyenne annuelle** | Calculée sur les trimestres effectivement saisis |
+| **Décision T3** | Moyenne ≥ 5 → Passe / < 5 → Redouble |
+
+### Mentions
+
+| Moyenne | Mention |
+|---------|---------|
+| < 5 | Insuffisant |
+| 5 – 6.99 | Passable |
+| 7 – 7.99 | Assez Bien |
+| 8 – 8.99 | Bien |
+| ≥ 9 | Très Bien |
+
+---
+
+## 👨‍💻 Auteur
+
+Ce projet a été entièrement conçu et développé par :
+
+**Pape Samba DOUCOURE**
+
+---
+
+## 🔒 Licence
+
+Copyright © 2025 **Pape Samba DOUCOURE**. Tous droits réservés.
+
+Ce projet et l'ensemble de son code source sont la propriété exclusive de Pape Samba DOUCOURE.  
+Toute reproduction, copie, modification, distribution ou utilisation — même partielle — sans autorisation écrite préalable de l'auteur est **strictement interdite**.
+
+Pour toute demande d'utilisation ou de collaboration, veuillez contacter l'auteur directement.
+
+---
+
+> *"L'éducation est l'arme la plus puissante pour changer le monde."* — Nelson Mandela
