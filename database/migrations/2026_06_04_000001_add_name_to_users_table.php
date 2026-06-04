@@ -8,11 +8,19 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // Ne rien faire - la colonne name n'est pas nécessaire
+        Schema::table('users', function (Blueprint $table) {
+            if (!Schema::hasColumn('users', 'name')) {
+                $table->string('name')->nullable()->after('id');
+            }
+        });
     }
 
     public function down(): void
     {
-        // Ne rien faire
+        Schema::table('users', function (Blueprint $table) {
+            if (Schema::hasColumn('users', 'name')) {
+                $table->dropColumn('name');
+            }
+        });
     }
 };
