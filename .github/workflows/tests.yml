@@ -37,13 +37,8 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-interaction --no-progress
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-
       - name: Install npm dependencies
-        run: npm install
+        run: npm ci
 
       - name: Build assets
         run: npm run build
@@ -53,6 +48,9 @@ jobs:
 
       - name: Generate app key
         run: php artisan key:generate
+
+      - name: Run migrations
+        run: php artisan migrate --env=testing
 
       - name: Execute tests
         run: php artisan test
