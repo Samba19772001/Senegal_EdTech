@@ -8,15 +8,11 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('name')->virtualAs("CONCAT(prenom, ' ', nom)")->nullable()->after('id');
-        });
+        // Ne rien faire - la colonne name n'est pas nécessaire
     }
 
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('name');
-        });
+        // Ne rien faire
     }
 };
