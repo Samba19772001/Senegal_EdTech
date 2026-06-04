@@ -12,17 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('eleves', function (Blueprint $table) {
-            //
+            $table->dropUnique('eleves_matricule_unique');
+            $table->unique(['user_id', 'matricule']);
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::table('eleves', function (Blueprint $table) {
-            //
+            $table->dropUnique(['user_id', 'matricule']);
+            $table->unique('matricule');
         });
     }
 };
