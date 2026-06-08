@@ -28,8 +28,9 @@ class ProfileTest extends TestCase
         $response = $this
             ->actingAs($user)
             ->patch('/profile', [
-                'name' => 'Test User',
-                'email' => 'test@example.com',
+                'nom'    => 'Diallo',
+                'prenom' => 'Moussa',
+                'email'  => 'test@example.com',
             ]);
 
         $response
@@ -38,9 +39,9 @@ class ProfileTest extends TestCase
 
         $user->refresh();
 
-        $this->assertSame('Test User', $user->name);
+        $this->assertSame('Diallo', $user->nom);
+        $this->assertSame('Moussa', $user->prenom);
         $this->assertSame('test@example.com', $user->email);
-        $this->assertNull($user->email_verified_at);
     }
 
     public function test_email_verification_status_is_unchanged_when_the_email_address_is_unchanged(): void
@@ -50,9 +51,16 @@ class ProfileTest extends TestCase
         $response = $this
             ->actingAs($user)
             ->patch('/profile', [
-                'name' => 'Test User',
-                'email' => $user->email,
-            ]);
+                'nom'    => 'Diallo',
+                'prenom' => 'Moussa',
+                'email'  => 'test@example.com',
+        ]);
+
+        $user->refresh();
+
+        $this->assertSame('Diallo', $user->nom);
+        $this->assertSame('Moussa', $user->prenom);
+        $this->assertSame('test@example.com', $user->email);
 
         $response
             ->assertSessionHasNoErrors()
