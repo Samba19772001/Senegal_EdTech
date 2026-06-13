@@ -340,7 +340,6 @@
             <div class="bg-primary px-6 py-5 rounded-t-2xl flex items-center justify-between">
                 <div>
                     <h3 class="text-white font-semibold text-base">Importer depuis Excel</h3>
-                    <p class="text-blue-200 text-xs mt-0.5">Colonnes : nom | prenom | sexe | date_naissance | matricule</p>
                 </div>
                 <button onclick="fermerModalImport()" class="text-blue-200 hover:text-white transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
