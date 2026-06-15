@@ -19,7 +19,7 @@
     .annee-classe { font-size: 9.5px; color: #1E293B; text-align: center; margin-top: 4px; }
     .annee-classe strong { color: #00288e; }
     .ecole-nom { font-size: 15px; font-weight: bold; color: #00288e; text-transform: uppercase; text-align: center; }
-    .ecole-info { font-size: 9.5px; color: #444653; text-align: center; margin-top: 3px; }
+    .ecole-info { font-size: 11.5px; color: #444653; text-align: center; margin-top: 3px; }
     .ministere { font-size: 9.5px; font-weight: bold; text-transform: uppercase; color: #1E293B; text-align: center; }
     .trimestre-badge { display: inline-block; background: #00288e; color: white; font-size: 10px; font-weight: bold; padding: 4px 12px; border-radius: 10px; margin-top: 6px; }
     .ligne-separation { border-bottom: 2.5px solid #00288e; margin: 10px 0; }
@@ -86,11 +86,15 @@
                 <p class="annee-classe">Effectif : <strong>{{ $composition->classe->eleves->count() }} élèves</strong></p>
             </td>
             <td style="width: 40%; text-align: center;">
-                <p class="ecole-nom">{{ $eleve->user->nom_ecole }}</p>
-                <p class="ecole-info">{{ $eleve->user->region }} — {{ $eleve->user->departement }} — {{ $eleve->user->commune }}</p>
                 <p class="ecole-info" style="margin-top: 3px;">
                     {{ $eleve->user->type_ecole == 'publique' ? 'École Publique' : 'École Privée' }}
                 </p>
+                <p class="ecole-nom">{{ $eleve->user->nom_ecole }}</p>
+                <p class="ecole-info">
+                    IA : {{ $eleve->user->region }} <br>
+                    IEF : {{ $eleve->user->departement }}
+                </p>
+                
             </td>
             <td style="width: 30%; text-align: right;">
                 <p class="ministere">Ministère de<br/>l'Éducation Nationale</p>
@@ -104,8 +108,21 @@
     <div class="ligne-separation"></div>
 
     {{-- TITRE --}}
+    @php
+        $libelle = strtoupper($composition->libelle);
+    @endphp
+
     <div class="titre-bulletin">
-        BULLETIN DE COMPOSITION — {{ strtoupper($composition->libelle) }}
+        BULLETIN DE COMPOSITION — 
+        @if(str_contains($libelle, 'T3'))
+            3em TRIMESTRE
+        @elseif(str_contains($libelle, 'T2'))
+            2em TRIMESTRE
+        @elseif(str_contains($libelle, 'T1'))
+            1er TRIMESTRE
+        @else
+            {{ $libelle }}
+        @endif
     </div>
 
     {{-- INFOS ÉLÈVE --}}

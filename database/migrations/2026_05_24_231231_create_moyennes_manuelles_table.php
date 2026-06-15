@@ -14,8 +14,9 @@ return new class extends Migration
             $table->foreignId('eleve_id')->constrained('eleves')->cascadeOnDelete();
             $table->tinyInteger('trimestre'); // 1, 2 ou 3
             $table->decimal('moyenne', 4, 2); // moyenne sur 10
+            $table->string('annee_scolaire', 9);
             $table->timestamps();
-            $table->unique(['eleve_id', 'trimestre']);
+            $table->unique(['eleve_id', 'trimestre','annee_scolaire'], 'moy_man_unique');
         });
     }
 

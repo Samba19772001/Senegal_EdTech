@@ -55,10 +55,8 @@ class BulletinService
             $noteEleve = $notesMatiere->get($eleve->id);
 
             if ($noteEleve !== null) {
-                $rang_mat = 1;
-                foreach ($notesMatiere as $eId => $n) {
-                    if ($n > $noteEleve) $rang_mat++;
-                }
+                // Rang = nombre d'élèves ayant une note STRICTEMENT supérieure + 1
+                $rang_mat = $notesMatiere->filter(fn($n) => $n > $noteEleve)->count() + 1;
                 $rangParMatiere[$mat->id] = $rang_mat;
             }
         }

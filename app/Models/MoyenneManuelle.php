@@ -13,6 +13,7 @@ class MoyenneManuelle extends Model
         'eleve_id',
         'trimestre',
         'moyenne',
+        'annee_scolaire',
     ];
 
     public function eleve()

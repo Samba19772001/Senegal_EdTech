@@ -34,9 +34,9 @@ class MatiereSeeder extends Seeder
 
             'CE1' => [
                 // ✏️ Mets tes matières ici
-                'Mots Familier'         => 10,
-                'Mots Inventés'         => 10,
-                'Fluidité'              => 10,
+                'Mots Familier'         => 7,
+                'Mots Inventés'         => 8,
+                'Fluidité'              => 5,
                 'LC / Ressources'       => 20,
                 'LC / Compétence'       => 20,
                 'Maths / Ressources'    => 40,

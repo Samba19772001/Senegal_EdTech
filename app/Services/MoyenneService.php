@@ -58,10 +58,13 @@ class MoyenneService
                 'eleve'   => $eleve,
                 'moyenne' => $this->calculerMoyenneEleve($eleve, $composition),
             ];
-        });
+        })->sortByDesc('moyenne')->values();
 
-        return $resultats->sortByDesc('moyenne')->values()->map(function ($item, $index) {
-            $item['rang'] = $index + 1;
+        // Gestion exæquo : rang = nb d'élèves avec moyenne strictement supérieure + 1
+        return $resultats->map(function ($item) use ($resultats) {
+            $item['rang'] = $resultats->filter(
+                fn($other) => $other['moyenne'] > $item['moyenne']
+            )->count() + 1;
             return $item;
         });
     }
@@ -121,15 +124,17 @@ class MoyenneService
         $eleves = $compositionT3->classe->eleves;
 
         $resultats = $eleves->map(function ($eleve) {
-            $moy = $this->calculerMoyenneAnnuelle($eleve);
             return [
                 'eleve'   => $eleve,
-                'moyenne' => $moy ?? 0,
+                'moyenne' => $this->calculerMoyenneAnnuelle($eleve) ?? 0,
             ];
-        });
+        })->sortByDesc('moyenne')->values();
 
-        return $resultats->sortByDesc('moyenne')->values()->map(function ($item, $index) {
-            $item['rang'] = $index + 1;
+        // Même logique exæquo
+        return $resultats->map(function ($item) use ($resultats) {
+            $item['rang'] = $resultats->filter(
+                fn($other) => $other['moyenne'] > $item['moyenne']
+            )->count() + 1;
             return $item;
         });
     }
