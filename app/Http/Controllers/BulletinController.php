@@ -111,4 +111,133 @@ class BulletinController extends Controller
 
         $zip->finish();
     }
+
+    public function classement($compositionId)
+    {
+        $composition = \App\Models\Composition::where('user_id', auth()->id())
+            ->with('classe.eleves')
+            ->findOrFail($compositionId);
+
+        $niveau = $composition->classe->nom;
+
+        $matieres = \App\Models\Matiere::where(function($q) use ($niveau) {
+            $q->where('is_default', true)->where('classe_niveau', $niveau);
+        })->orWhere(function($q) use ($niveau) {
+            $q->where('user_id', auth()->id())
+            ->where('is_default', false)
+            ->where('classe_niveau', $niveau);
+        })->orderBy('ordre')->get();
+
+        $moyenneService = new \App\Services\MoyenneService();
+
+        $resultats = $composition->classe->eleves->map(function($eleve) use ($composition, $matieres, $moyenneService) {
+            $notes = $eleve->notes()
+                ->where('composition_id', $composition->id)
+                ->with('matiere')
+                ->get()
+                ->keyBy('matiere_id');
+
+            $totalPoints = 0;
+            $notesPropres = [];
+
+            foreach ($matieres as $matiere) {
+                $note = $notes->get($matiere->id);
+                $noteVal = $note ? $note->note : null;
+                $noteRamenee = ($noteVal !== null) ? round($noteVal * 10 / $matiere->note_sur, 2) : null;
+                $totalPoints += $noteVal ?? 0;
+                $notesPropres[$matiere->id] = [
+                    'note'        => $noteVal,
+                    'note_sur'    => $matiere->note_sur,
+                    'note_ramenee'=> $noteRamenee,
+                ];
+            }
+
+            $moyenne = $moyenneService->calculerMoyenneEleve($eleve, $composition);
+
+            return [
+                'eleve'        => $eleve,
+                'notes'        => $notesPropres,
+                'totalPoints'  => $totalPoints,
+                'moyenne'      => $moyenne,
+                'mention'      => $moyenneService->getMention($moyenne),
+            ];
+        })
+        ->sortByDesc('moyenne')
+        ->values()
+        ->map(function($item, $index) {
+            $item['rang'] = $index + 1;
+            return $item;
+        });
+
+        $moyenneClasse = $resultats->avg('moyenne');
+
+        return view('bulletins.classement', compact(
+            'composition', 'matieres', 'resultats', 'moyenneClasse'
+        ));
+    }
+
+    public function classementPdf($compositionId)
+    {
+        $composition = \App\Models\Composition::where('user_id', auth()->id())
+            ->with('classe.eleves')
+            ->findOrFail($compositionId);
+
+        $niveau = $composition->classe->nom;
+
+        $matieres = \App\Models\Matiere::where(function($q) use ($niveau) {
+            $q->where('is_default', true)->where('classe_niveau', $niveau);
+        })->orWhere(function($q) use ($niveau) {
+            $q->where('user_id', auth()->id())
+            ->where('is_default', false)
+            ->where('classe_niveau', $niveau);
+        })->orderBy('ordre')->get();
+
+        $moyenneService = new \App\Services\MoyenneService();
+
+        $resultats = $composition->classe->eleves->map(function($eleve) use ($composition, $matieres, $moyenneService) {
+            $notes = $eleve->notes()
+                ->where('composition_id', $composition->id)
+                ->with('matiere')
+                ->get()
+                ->keyBy('matiere_id');
+
+            $totalPoints = 0;
+            $notesPropres = [];
+
+            foreach ($matieres as $matiere) {
+                $note = $notes->get($matiere->id);
+                $noteVal = $note ? $note->note : null;
+                $totalPoints += $noteVal ?? 0;
+                $notesPropres[$matiere->id] = [
+                    'note'        => $noteVal,
+                    'note_sur'    => $matiere->note_sur,
+                    'note_ramenee'=> ($noteVal !== null) ? round($noteVal * 10 / $matiere->note_sur, 2) : null,
+                ];
+            }
+
+            $moyenne = $moyenneService->calculerMoyenneEleve($eleve, $composition);
+
+            return [
+                'eleve'       => $eleve,
+                'notes'       => $notesPropres,
+                'totalPoints' => $totalPoints,
+                'moyenne'     => $moyenne,
+                'mention'     => $moyenneService->getMention($moyenne),
+            ];
+        })
+        ->sortByDesc('moyenne')
+        ->values()
+        ->map(function($item, $index) {
+            $item['rang'] = $index + 1;
+            return $item;
+        });
+
+        $moyenneClasse = $resultats->avg('moyenne');
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('bulletins.classement_pdf', compact(
+            'composition', 'matieres', 'resultats', 'moyenneClasse'
+        ))->setPaper('A4', 'landscape');
+
+        return $pdf->download("Classement_T{$composition->trimestre}_{$composition->classe->nom}.pdf");
+    }
 }
