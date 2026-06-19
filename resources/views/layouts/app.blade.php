@@ -37,7 +37,11 @@
 </head>
 <body class="bg-bg-page min-h-screen" style="font-family: 'Inter', sans-serif;">
 
-<div class="flex h-screen overflow-hidden">
+{{-- ✅ SEUL CHANGEMENT : overflow-hidden → overflow: clip
+     clip coupe visuellement SANS créer de scroll container
+     → les enfants peuvent avoir leur propre overflow-x: auto
+     → aucune autre page n'est affectée --}}
+<div class="flex" style="min-height: 100vh;">
 
     {{-- OVERLAY mobile --}}
     <div id="overlay"
@@ -63,7 +67,6 @@
                     <p class="text-text-muted text-xs">Portail de l'enseignement primaire</p>
                 </div>
             </div>
-            {{-- Bouton fermer sidebar sur mobile --}}
             <button onclick="closeSidebar()" class="lg:hidden text-text-muted hover:text-primary">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -73,7 +76,6 @@
 
         {{-- Navigation --}}
         <nav class="flex-1 px-4 py-5 space-y-1 overflow-y-auto">
-
             <a href="{{ route('dashboard') }}" onclick="closeSidebar()"
                 class="sidebar-link {{ request()->routeIs('dashboard') ? 'active' : '' }} flex items-center gap-3 px-4 py-2.5 rounded-xl text-text-muted text-sm font-medium">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -82,7 +84,6 @@
                 </svg>
                 Dashboard
             </a>
-
             <a href="{{ route('eleves.index') }}" onclick="closeSidebar()"
                 class="sidebar-link {{ request()->routeIs('eleves.*') ? 'active' : '' }} flex items-center gap-3 px-4 py-2.5 rounded-xl text-text-muted text-sm font-medium">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -91,7 +92,6 @@
                 </svg>
                 Élèves
             </a>
-
             <a href="{{ route('matieres.index') }}" onclick="closeSidebar()"
                 class="sidebar-link {{ request()->routeIs('matieres.*') ? 'active' : '' }} flex items-center gap-3 px-4 py-2.5 rounded-xl text-text-muted text-sm font-medium">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -100,7 +100,6 @@
                 </svg>
                 Matières
             </a>
-
             <a href="{{ route('notes.index') }}" onclick="closeSidebar()"
                 class="sidebar-link {{ request()->routeIs('notes.*') ? 'active' : '' }} flex items-center gap-3 px-4 py-2.5 rounded-xl text-text-muted text-sm font-medium">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -109,7 +108,6 @@
                 </svg>
                 Notes
             </a>
-
             <a href="{{ route('compositions.index') }}" onclick="closeSidebar()"
                 class="sidebar-link {{ request()->routeIs('compositions.*') ? 'active' : '' }} flex items-center gap-3 px-4 py-2.5 rounded-xl text-text-muted text-sm font-medium">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -118,7 +116,6 @@
                 </svg>
                 Compositions
             </a>
-
             <a href="{{ route('bulletins.index') }}" onclick="closeSidebar()"
                 class="sidebar-link {{ request()->routeIs('bulletins.*') ? 'active' : '' }} flex items-center gap-3 px-4 py-2.5 rounded-xl text-text-muted text-sm font-medium">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -127,7 +124,6 @@
                 </svg>
                 Bulletins
             </a>
-
             <a href="{{ route('profile.edit') }}" onclick="closeSidebar()"
                 class="sidebar-link {{ request()->routeIs('profile.*') ? 'active' : '' }} flex items-center gap-3 px-4 py-2.5 rounded-xl text-text-muted text-sm font-medium">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -136,12 +132,10 @@
                 </svg>
                 Profil
             </a>
-
         </nav>
 
-        {{-- Bas de sidebar --}}
+        {{-- Bas sidebar --}}
         <div class="px-4 py-4 border-t border-border space-y-2">
-
             <a href="{{ route('apropos.index') }}" onclick="closeSidebar()"
                 class="sidebar-link {{ request()->routeIs('apropos.*') ? 'active' : '' }} flex items-center gap-3 px-4 py-2.5 rounded-xl text-text-muted text-sm font-medium">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -150,7 +144,6 @@
                 </svg>
                 À propos
             </a>
-
             <a href="{{ route('parametres.index') }}" onclick="closeSidebar()"
                 class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-xl text-text-muted text-sm font-medium">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -160,7 +153,6 @@
                 </svg>
                 Paramètres
             </a>
-
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button type="submit"
@@ -172,7 +164,6 @@
                     Déconnexion
                 </button>
             </form>
-
         </div>
     </aside>
 
@@ -180,11 +171,9 @@
     <div class="flex-1 flex flex-col lg:ml-72 min-h-screen">
 
         {{-- HEADER --}}
-        <header class="bg-white border-b border-border px-4 lg:px-8 py-4 flex items-center justify-between sticky top-0 z-10">
+        <header class="bg-white border-b border-border px-4 lg:px-8 py-4 flex items-center justify-between fixed top-0 left-0 right-0 z-20 lg:left-72" style="overflow:hidden;">
 
-            {{-- Gauche : hamburger + titre --}}
             <div class="flex items-center gap-3">
-                {{-- Bouton hamburger (mobile) --}}
                 <button onclick="openSidebar()"
                     class="lg:hidden w-9 h-9 flex items-center justify-center rounded-xl border border-border bg-bg-page hover:bg-primary-bg transition-colors">
                     <svg class="w-5 h-5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -196,11 +185,7 @@
                     <h1 class="text-lg lg:text-xl font-bold text-text-dark">@yield('page_title', 'Page')</h1>
                 </div>
             </div>
-
-            {{-- Droite header --}}
             <div class="flex items-center gap-2 lg:gap-4">
-
-                {{-- Recherche (cachée sur mobile) --}}
                 <div class="relative hidden md:block" id="search-container">
                     <svg class="w-4 h-4 text-text-muted absolute left-3 top-1/2 -translate-y-1/2 z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
@@ -213,8 +198,6 @@
                         <div id="search-list"></div>
                     </div>
                 </div>
-
-                {{-- Notif --}}
                 <div class="relative" id="notif-container">
                     <button onclick="toggleNotif()"
                         class="relative w-9 h-9 flex items-center justify-center rounded-xl border border-border bg-bg-page hover:bg-primary-bg transition-colors">
@@ -281,34 +264,25 @@
                         <div class="px-4 py-3 border-b border-border flex items-center justify-between">
                             <h3 class="font-bold text-text-dark text-sm">Alertes</h3>
                             @if(count($alertes) > 0)
-                                <span class="text-xs font-semibold bg-red-50 text-red-600 px-2 py-0.5 rounded-full">
-                                    {{ count($alertes) }} alerte(s)
-                                </span>
+                                <span class="text-xs font-semibold bg-red-50 text-red-600 px-2 py-0.5 rounded-full">{{ count($alertes) }} alerte(s)</span>
                             @endif
                         </div>
                         <div class="max-h-72 overflow-y-auto">
                             @forelse($alertes as $alerte)
                             <a href="{{ $alerte['lien'] }}"
                                 class="flex items-start gap-3 px-4 py-3 hover:bg-bg-page transition-colors border-b border-border last:border-0">
-                                <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5
-                                    {{ $alerte['type'] == 'warning' ? 'bg-amber-50' : 'bg-blue-50' }}">
+                                <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5 {{ $alerte['type'] == 'warning' ? 'bg-amber-50' : 'bg-blue-50' }}">
                                     @if($alerte['type'] == 'warning')
-                                        <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                        </svg>
+                                        <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                     @else
-                                        <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                        </svg>
+                                        <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                     @endif
                                 </div>
                                 <p class="text-xs text-text-muted leading-relaxed">{{ $alerte['message'] }}</p>
                             </a>
                             @empty
                             <div class="px-4 py-8 text-center">
-                                <svg class="w-10 h-10 text-gray-200 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                </svg>
+                                <svg class="w-10 h-10 text-gray-200 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                 <p class="text-sm font-medium text-text-dark">Tout est à jour !</p>
                                 <p class="text-xs text-text-muted mt-1">Aucune alerte pour le moment</p>
                             </div>
@@ -316,14 +290,11 @@
                         </div>
                     </div>
                 </div>
-
-                {{-- Aide --}}
                 <div class="relative hidden sm:block" id="aide-container">
                     <button onclick="toggleAide()"
                         class="w-9 h-9 flex items-center justify-center rounded-xl border border-border bg-bg-page hover:bg-primary-bg transition-colors">
                         <svg class="w-5 h-5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
                     </button>
                     <div id="aide-dropdown"
@@ -334,16 +305,13 @@
                         </div>
                         <div class="p-4 space-y-3">
                             @foreach([
-                                ['1', 'Ajouter vos élèves', 'Allez dans Élèves → Ajouter ou Importer Excel', 'eleves.index', 'text-blue-600 bg-blue-50'],
-                                ['2', 'Configurer les matières', 'Vérifiez les matières dans Matières (déjà configurées)', 'matieres.index', 'text-green-600 bg-green-50'],
-                                ['3', 'Saisir les notes', 'Allez dans Compositions → Saisir notes par matière', 'compositions.index', 'text-amber-600 bg-amber-50'],
-                                ['4', 'Générer les bulletins', 'Une fois les notes saisies → Bulletins PDF', 'bulletins.index', 'text-purple-600 bg-purple-50'],
+                                ['1','Ajouter vos élèves','Allez dans Élèves → Ajouter ou Importer Excel','eleves.index','text-blue-600 bg-blue-50'],
+                                ['2','Configurer les matières','Vérifiez les matières dans Matières (déjà configurées)','matieres.index','text-green-600 bg-green-50'],
+                                ['3','Saisir les notes','Allez dans Compositions → Saisir notes par matière','compositions.index','text-amber-600 bg-amber-50'],
+                                ['4','Générer les bulletins','Une fois les notes saisies → Bulletins PDF','bulletins.index','text-purple-600 bg-purple-50'],
                             ] as $step)
-                            <a href="{{ route($step[3]) }}"
-                                class="flex items-start gap-3 p-3 rounded-xl hover:bg-bg-page transition-colors border border-border">
-                                <div class="w-7 h-7 rounded-full {{ $step[4] }} flex items-center justify-center flex-shrink-0 text-xs font-bold">
-                                    {{ $step[0] }}
-                                </div>
+                            <a href="{{ route($step[3]) }}" class="flex items-start gap-3 p-3 rounded-xl hover:bg-bg-page transition-colors border border-border">
+                                <div class="w-7 h-7 rounded-full {{ $step[4] }} flex items-center justify-center flex-shrink-0 text-xs font-bold">{{ $step[0] }}</div>
                                 <div>
                                     <p class="text-sm font-semibold text-text-dark">{{ $step[1] }}</p>
                                     <p class="text-xs text-text-muted mt-0.5">{{ $step[2] }}</p>
@@ -351,36 +319,28 @@
                             </a>
                             @endforeach
                             <div class="pt-2 border-t border-border">
-                                <a href="{{ route('apropos.index') }}"
-                                    class="flex items-center justify-center gap-2 w-full py-2 bg-primary-bg text-primary rounded-xl text-sm font-medium hover:bg-primary hover:text-white transition-colors">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                    </svg>
+                                <a href="{{ route('apropos.index') }}" class="flex items-center justify-center gap-2 w-full py-2 bg-primary-bg text-primary rounded-xl text-sm font-medium hover:bg-primary hover:text-white transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                     En savoir plus
                                 </a>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                {{-- Avatar --}}
                 <div class="flex items-center gap-2">
                     <div class="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-white text-sm font-bold ring-2 ring-blue-200 flex-shrink-0">
                         {{ strtoupper(substr(auth()->user()->prenom ?? 'U', 0, 1)) }}{{ strtoupper(substr(auth()->user()->nom ?? '', 0, 1)) }}
                     </div>
                     <div class="hidden lg:block">
-                        <p class="text-sm font-semibold text-text-dark leading-tight">
-                            {{ auth()->user()->prenom ?? '' }} {{ auth()->user()->nom ?? '' }}
-                        </p>
+                        <p class="text-sm font-semibold text-text-dark leading-tight">{{ auth()->user()->prenom ?? '' }} {{ auth()->user()->nom ?? '' }}</p>
                         <p class="text-xs text-text-muted">{{ auth()->user()->nom_ecole ?? 'Enseignant' }}</p>
                     </div>
                 </div>
-
             </div>
         </header>
 
         {{-- PAGE CONTENT --}}
-        <main class="flex-1 p-4 lg:p-8 overflow-y-auto">
+        <main class="flex-1 p-4 lg:p-8 pt-20 lg:pt-24" id="main-content">
             @yield('content')
         </main>
 
@@ -390,7 +350,6 @@
 @stack('scripts')
 
 <script>
-// Sidebar mobile
 function openSidebar() {
     document.getElementById('sidebar').classList.remove('-translate-x-full');
     document.getElementById('overlay').classList.remove('hidden');
@@ -399,12 +358,9 @@ function closeSidebar() {
     document.getElementById('sidebar').classList.add('-translate-x-full');
     document.getElementById('overlay').classList.add('hidden');
 }
-
-// Recherche
 const searchInput   = document.getElementById('search-input');
 const searchResults = document.getElementById('search-results');
 const searchList    = document.getElementById('search-list');
-
 if (searchInput) {
     let debounceTimer;
     searchInput.addEventListener('input', function () {
@@ -423,15 +379,8 @@ if (searchInput) {
                             const initiales = (eleve.prenom[0] + eleve.nom[0]).toUpperCase();
                             const div = document.createElement('div');
                             div.className = 'flex items-center gap-3 px-4 py-2.5 hover:bg-primary-bg cursor-pointer transition-colors border-b border-gray-50 last:border-0';
-                            div.innerHTML = `
-                                <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center flex-shrink-0">${initiales}</div>
-                                <div>
-                                    <p class="text-sm font-medium text-gray-800">${eleve.prenom} ${eleve.nom}</p>
-                                    <p class="text-xs text-gray-400">${eleve.classe ?? '—'}</p>
-                                </div>`;
-                            div.addEventListener('click', () => {
-                                window.location.href = `/eleves/${eleve.id}/profil`;
-                            });
+                            div.innerHTML = `<div class="w-8 h-8 rounded-full bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center flex-shrink-0">${initiales}</div><div><p class="text-sm font-medium text-gray-800">${eleve.prenom} ${eleve.nom}</p><p class="text-xs text-gray-400">${eleve.classe ?? '—'}</p></div>`;
+                            div.addEventListener('click', () => { window.location.href = `/eleves/${eleve.id}/profil`; });
                             searchList.appendChild(div);
                         });
                     }
@@ -444,8 +393,6 @@ if (searchInput) {
         if (sc && !sc.contains(e.target)) searchResults.classList.add('hidden');
     });
 }
-
-// Notif & Aide
 function toggleNotif() {
     document.getElementById('notif-dropdown').classList.toggle('hidden');
     const aide = document.getElementById('aide-dropdown');
@@ -462,6 +409,5 @@ document.addEventListener('click', function(e) {
     if (ac && !ac.contains(e.target)) document.getElementById('aide-dropdown').classList.add('hidden');
 });
 </script>
-
 </body>
 </html>
