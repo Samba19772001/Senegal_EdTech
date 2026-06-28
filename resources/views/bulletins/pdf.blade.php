@@ -86,14 +86,15 @@
                 <p class="annee-classe">Effectif : <strong>{{ $composition->classe->eleves->count() }} élèves</strong></p>
             </td>
             <td style="width: 40%; text-align: center;">
+                <h2 class="ecole-info">
+                    IA : {{ $eleve->user->region }} <br>
+                    IEF : {{ $eleve->user->departement }}
+                </h2>
                 <p class="ecole-info" style="margin-top: 3px;">
                     {{ $eleve->user->type_ecole == 'publique' ? 'École Publique' : 'École Privée' }}
                 </p>
                 <p class="ecole-nom">{{ $eleve->user->nom_ecole }}</p>
-                <p class="ecole-info">
-                    IA : {{ $eleve->user->region }} <br>
-                    IEF : {{ $eleve->user->departement }}
-                </p>
+                
                 
             </td>
             <td style="width: 30%; text-align: right;">
@@ -289,13 +290,9 @@
                 ->get();
 
             $moyComp = null;
-            $rangComp = null;
-
             if ($notesComp->count() > 0) {
                 $moyenneService = new \App\Services\MoyenneService();
-                $moyComp  = $moyenneService->calculerMoyenneEleve($eleve, $comp);
-                $classement = $moyenneService->calculerClassement($comp);
-                $rangComp = $classement->firstWhere('eleve.id', $eleve->id)['rang'] ?? null;
+                $moyComp = $moyenneService->calculerMoyenneEleve($eleve, $comp);
             } else {
                 $mm = \App\Models\MoyenneManuelle::where('user_id', $user->id)
                     ->where('eleve_id', $eleve->id)
@@ -303,18 +300,39 @@
                     ->first();
                 if ($mm) $moyComp = $mm->moyenne;
             }
-
-            $recapTrimestres[$comp->trimestre] = [
-                'moyenne' => $moyComp,
-                'rang'    => $rangComp,
-            ];
+            $recapTrimestres[$comp->trimestre] = ['moyenne' => $moyComp];
         }
     @endphp
 
-    {{-- Récapitulatif des 3 trimestres --}}
+    {{-- Tableau Bilan Annuel --}}
     <table class="resultat" style="margin-top: 8px;">
         <tr>
-            <td class="titre-col" colspan="6" style="background: #1e3a5f; text-align: center; font-size: 11px;">
+            <td class="titre-col" colspan="3" style="background: #1e3a5f; text-align: center; font-size: 11px;">
+                ★ BILAN ANNUEL
+            </td>
+        </tr>
+        <tr>
+            <td class="titre-col">Moyenne annuelle</td>
+            <td class="titre-col">Rang annuel</td>
+            <td class="titre-col">Décision du conseil</td>
+        </tr>
+        <tr>
+            <td class="val-col" style="font-size: 15px; font-weight: bold; color: #00288e;">
+                {{ number_format($moyenneAnnuelle, 2) }} / 10
+            </td>
+            <td class="val-col">
+                {{ $rangAnnuel }}<sup>{{ $rangAnnuel == 1 ? 'er' : 'ème' }}</sup>
+            </td>
+            <td class="val-col" style="font-size: 12px; {{ $decision == 'Passe en classe supérieure' ? 'color: #166534;' : 'color: #991b1b;' }}">
+                {{ $decision }}
+            </td>
+        </tr>
+    </table>
+
+    {{-- Tableau Récapitulatif séparé --}}
+    <table class="resultat" style="margin-top: 6px;">
+        <tr>
+            <td class="titre-col" colspan="5" style="background: #1e3a5f; text-align: center; font-size: 11px;">
                 RÉCAPITULATIF DES TRIMESTRES
             </td>
         </tr>
@@ -324,7 +342,6 @@
             <td class="titre-col">Trimestre 2</td>
             <td class="titre-col">Trimestre 3</td>
             <td class="titre-col">Moy. Annuelle</td>
-            <td class="titre-col">Rang Annuel</td>
         </tr>
         <tr>
             <td class="val-col" style="font-size: 10px; color: #444653; font-weight: bold;">Moyenne</td>
@@ -337,27 +354,12 @@
                 @endif
             </td>
             @endforeach
-            <td class="val-col" style="font-size: 15px; font-weight: bold; color: #00288e;">
+            <td class="val-col" style="font-size: 13px; font-weight: bold; color: #00288e;">
                 {{ number_format($moyenneAnnuelle, 2) }}/10
-            </td>
-            <td class="val-col">
-                {{ $rangAnnuel }}<sup>{{ $rangAnnuel == 1 ? 'er' : 'ème' }}</sup>
             </td>
         </tr>
     </table>
 
-    {{-- Décision du conseil --}}
-    <table class="resultat" style="margin-top: 5px;">
-        <tr>
-            <td class="titre-col" style="background: #1e3a5f;">★ DÉCISION DU CONSEIL</td>
-        </tr>
-        <tr>
-            <td class="val-col" style="font-size: 13px; font-weight: bold;
-                {{ $decision == 'Passe en classe supérieure' ? 'color: #166534;' : 'color: #991b1b;' }}">
-                {{ $decision }}
-            </td>
-        </tr>
-    </table>
     @endif
 
     {{-- SIGNATURES --}}

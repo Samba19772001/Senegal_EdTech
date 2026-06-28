@@ -216,6 +216,19 @@
         </div>
         @endif
 
+        {{-- Bouton proposition de passage (T3 uniquement) --}}
+        @if($bulletinsComposition->count() > 0 && $trimestreActif == 3)
+        <div class="mt-3 flex justify-center">
+            <a href="{{ route('bulletins.proposition', $composition->id) }}"
+                class="flex items-center gap-2 px-5 py-2.5 border border-primary text-primary hover:bg-primary hover:text-white rounded-xl text-sm font-medium transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                Proposition de passage
+            </a>
+        </div>
+        @endif
+
     @else
         <div class="bg-white rounded-2xl border border-border p-8 text-center">
             <svg class="w-12 h-12 text-gray-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">

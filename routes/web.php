@@ -65,6 +65,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/compositions/{composition}/classement', [BulletinController::class, 'classement'])->name('bulletins.classement');
     Route::get('/compositions/{composition}/classement/pdf', [BulletinController::class, 'classementPdf'])->name('bulletins.classement.pdf');
 
+    Route::get('/compositions/{composition}/proposition-passage', [BulletinController::class, 'propositionPassage'])->name('bulletins.proposition');
+    Route::get('/compositions/{composition}/proposition-passage/pdf', [BulletinController::class, 'propositionPassagePdf'])->name('bulletins.proposition.pdf');
+    
     Route::get('/compositions/{composition}/matieres/{matiere}/notes', [NoteController::class, 'showMatiere'])->name('notes.showMatiere');
     Route::post('/compositions/{composition}/matieres/{matiere}/notes', [NoteController::class, 'storeMatiere'])->name('notes.storeMatiere');
     Route::get('/notes', [NoteController::class, 'index'])->name('notes.index');

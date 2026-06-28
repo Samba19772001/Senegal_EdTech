@@ -37,8 +37,10 @@
 <body>
 
     <div class="header">
-        <h1>{{ auth()->user()->nom_ecole }}</h1>
-        <p>{{ auth()->user()->region }} — Année scolaire : {{ auth()->user()->annee_scolaire }}</p>
+        <h1>IA : {{ auth()->user()->region }} — IEF : {{ auth()->user()->departement }}</h1>
+        <h2>{{ auth()->user()->nom_ecole }}</h2>
+        <p>Année scolaire : {{ auth()->user()->annee_scolaire }}</p>
+        
     </div>
 
     <div class="ligne-sep"></div>
@@ -65,7 +67,8 @@
         <thead>
             <tr>
                 <th style="width: 25px;">Rang</th>
-                <th class="left" style="width: 120px;">Élève</th>
+                <th class="left" style="width: 110px;">Élève</th>
+                <th style="width: 20px;">Sexe</th>
                 @foreach($matieres as $matiere)
                 <th style="width: 35px;">{{ Str::limit($matiere->nom, 6) }}<br>/{{ $matiere->note_sur }}</th>
                 @endforeach
@@ -89,6 +92,7 @@
             <tr class="{{ $rowClass }}">
                 <td><strong>{{ $resultat['rang'] }}</strong></td>
                 <td class="left">{{ $resultat['eleve']->prenom }} {{ $resultat['eleve']->nom }}</td>
+                <td>{{ $resultat['eleve']->sexe }}</td>
                 @foreach($matieres as $matiere)
                 @php $nd = $resultat['notes'][$matiere->id] ?? null; @endphp
                 <td>{{ $nd && $nd['note'] !== null ? $nd['note'] : '—' }}</td>
@@ -101,7 +105,7 @@
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="2" style="text-align: left; padding-left: 4px;">Moyenne de la classe</td>
+                <td colspan="3" style="text-align: left; padding-left: 4px;">Moyenne de la classe</td>
                 @foreach($matieres as $matiere)
                 @php
                     $moyMat = $resultats->avg(function($r) use ($matiere) {

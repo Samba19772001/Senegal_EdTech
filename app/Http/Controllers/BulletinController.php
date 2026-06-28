@@ -240,4 +240,126 @@ class BulletinController extends Controller
 
         return $pdf->download("Classement_T{$composition->trimestre}_{$composition->classe->nom}.pdf");
     }
+
+    public function propositionPassage($compositionId)
+    {
+        $composition = \App\Models\Composition::where('user_id', auth()->id())
+            ->with('classe.eleves')
+            ->findOrFail($compositionId);
+
+        $moyenneService = new \App\Services\MoyenneService();
+        $user = auth()->user();
+
+        $classeActive = $user->classes()
+            ->where('annee_scolaire', $user->annee_scolaire)
+            ->latest()->first();
+
+        $compositions = \App\Models\Composition::where('user_id', $user->id)
+            ->where('classe_id', $classeActive?->id)
+            ->orderBy('trimestre')
+            ->get()
+            ->keyBy('trimestre');
+
+        $resultats = $composition->classe->eleves->map(function($eleve) use ($compositions, $moyenneService, $user) {
+            $moyennes = [];
+            foreach ([1, 2, 3] as $t) {
+                $comp = $compositions->get($t);
+                if (!$comp) { $moyennes[$t] = null; continue; }
+
+                $notes = $eleve->notes()
+                    ->where('composition_id', $comp->id)
+                    ->whereNotNull('note')->get();
+
+                if ($notes->count() > 0) {
+                    $moyennes[$t] = $moyenneService->calculerMoyenneEleve($eleve, $comp);
+                } else {
+                    $mm = \App\Models\MoyenneManuelle::where('user_id', $user->id)
+                        ->where('eleve_id', $eleve->id)
+                        ->where('trimestre', $t)->first();
+                    $moyennes[$t] = $mm ? $mm->moyenne : null;
+                }
+            }
+
+            $moyAnnuelle = $moyenneService->calculerMoyenneAnnuelle($eleve);
+            $decision    = $moyAnnuelle !== null ? $moyenneService->getDecision($moyAnnuelle) : '—';
+
+            return [
+                'eleve'       => $eleve,
+                'moyennes'    => $moyennes,
+                'moyAnnuelle' => $moyAnnuelle,
+                'decision'    => $decision,
+            ];
+        })
+        ->sortByDesc('moyAnnuelle')
+        ->values()
+        ->map(function($item, $index) {
+            $item['rang'] = $index + 1;
+            return $item;
+        });
+
+        return view('bulletins.proposition_passage', compact('composition', 'resultats'));
+    }
+
+    public function propositionPassagePdf($compositionId)
+    {
+        $composition = \App\Models\Composition::where('user_id', auth()->id())
+            ->with('classe.eleves')
+            ->findOrFail($compositionId);
+
+        $moyenneService = new \App\Services\MoyenneService();
+        $user = auth()->user();
+
+        $classeActive = $user->classes()
+            ->where('annee_scolaire', $user->annee_scolaire)
+            ->latest()->first();
+
+        $compositions = \App\Models\Composition::where('user_id', $user->id)
+            ->where('classe_id', $classeActive?->id)
+            ->orderBy('trimestre')
+            ->get()
+            ->keyBy('trimestre');
+
+        $resultats = $composition->classe->eleves->map(function($eleve) use ($compositions, $moyenneService, $user) {
+            $moyennes = [];
+            foreach ([1, 2, 3] as $t) {
+                $comp = $compositions->get($t);
+                if (!$comp) { $moyennes[$t] = null; continue; }
+
+                $notes = $eleve->notes()
+                    ->where('composition_id', $comp->id)
+                    ->whereNotNull('note')->get();
+
+                if ($notes->count() > 0) {
+                    $moyennes[$t] = $moyenneService->calculerMoyenneEleve($eleve, $comp);
+                } else {
+                    $mm = \App\Models\MoyenneManuelle::where('user_id', $user->id)
+                        ->where('eleve_id', $eleve->id)
+                        ->where('trimestre', $t)->first();
+                    $moyennes[$t] = $mm ? $mm->moyenne : null;
+                }
+            }
+
+            $moyAnnuelle = $moyenneService->calculerMoyenneAnnuelle($eleve);
+            $decision    = $moyAnnuelle !== null ? $moyenneService->getDecision($moyAnnuelle) : '—';
+
+            return [
+                'eleve'       => $eleve,
+                'moyennes'    => $moyennes,
+                'moyAnnuelle' => $moyAnnuelle,
+                'decision'    => $decision,
+            ];
+        })
+        ->sortByDesc('moyAnnuelle')
+        ->values()
+        ->map(function($item, $index) {
+            $item['rang'] = $index + 1;
+            return $item;
+        });
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('bulletins.proposition_passage_pdf', compact(
+            'composition', 'resultats'
+        ))->setPaper('A4', 'landscape');
+
+        return $pdf->download("Proposition_Passage_{$composition->classe->nom}.pdf");
+    }
 }
