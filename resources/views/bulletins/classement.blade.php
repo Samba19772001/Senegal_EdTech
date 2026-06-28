@@ -74,10 +74,10 @@
     </p>
 
     {{-- Tableau --}}
-    <div style="background:white;border-radius:16px;border:1px solid #c4c5d5;box-shadow:0 1px 3px rgba(0,0,0,.06);overflow:hidden;">
+    <div class="-mx-4 lg:mx-0 lg:rounded-2xl lg:border lg:border-border overflow-hidden"
+        style="background:white;border-top:1px solid #c4c5d5;border-bottom:1px solid #c4c5d5;box-shadow:0 1px 3px rgba(0,0,0,.06);">
         <div id="tableau-wrapper">
             <table style="width:max-content;min-width:100%;border-collapse:collapse;">
-
                 <thead>
                     <tr style="background:#1e3a8a;">
 

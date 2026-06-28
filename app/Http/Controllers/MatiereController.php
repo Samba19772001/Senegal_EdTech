@@ -65,8 +65,8 @@ class MatiereController extends Controller
             ->where('is_default', false)
             ->findOrFail($id);
 
-        // Supprimer toutes les notes liées à cette matière
-        Note::where('matiere_id', $matiere->id)->delete();
+        // Supprimer les notes liées avant de supprimer la matière
+        \App\Models\Note::where('matiere_id', $matiere->id)->delete();
 
         $matiere->delete();
         return redirect()->back()->with('success', 'Matière supprimée.');

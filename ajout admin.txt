@@ -1,0 +1,5 @@
+Pour créer les autres comptes admin, utilise simplement tinker :
+
+php artisan tinker
+
+App\Models\Admin::create(['nom' => 'Ton Nom', 'prenom' => 'Ton Prenom', 'email' => 'ton@email.com', 'password' => bcrypt('tonmotdepasse')]);

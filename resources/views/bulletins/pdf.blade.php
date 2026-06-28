@@ -5,41 +5,41 @@
     <title>{{ $eleve->prenom }} {{ $eleve->nom }}</title>
     <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: DejaVu Sans, sans-serif; font-size: 11px; color: #1E293B; padding: 20px; }
+    body { font-family: DejaVu Sans, sans-serif; font-size: 10.5px; color: #1E293B; padding: 14px; }
 
-    .entete { width: 100%; margin-bottom: 12px; }
-    .entete td { vertical-align: top; padding: 0 8px; border: none; }
-    .republique { font-size: 10px; font-weight: bold; text-transform: uppercase; color: #1E293B; text-align: center; }
-    .devise { font-size: 9px; color: #444653; text-align: center; margin-top: 3px; }
-    .drapeau { margin: 8px auto; width: 50px; height: 32px; border: 0.5px solid #ccc; overflow: hidden; }
+    .entete { width: 100%; margin-bottom: 10px; }
+    .entete td { vertical-align: top; padding: 0 7px; border: none; }
+    .republique { font-size: 9.5px; font-weight: bold; text-transform: uppercase; text-align: center; }
+    .devise { font-size: 8.5px; color: #444653; text-align: center; margin-top: 2px; }
+    .drapeau { margin: 6px auto; width: 46px; height: 30px; border: 0.5px solid #ccc; overflow: hidden; }
     .drapeau-vert  { background: #00853F; width: 33.33%; height: 100%; float: left; }
     .drapeau-jaune { background: #FDEF42; width: 33.33%; height: 100%; float: left; position: relative; }
     .drapeau-rouge { background: #E31B23; width: 33.33%; height: 100%; float: left; }
-    .etoile { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #00853F; font-size: 12px; font-weight: bold; }
-    .annee-classe { font-size: 9.5px; color: #1E293B; text-align: center; margin-top: 4px; }
+    .etoile { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #00853F; font-size: 11px; font-weight: bold; }
+    .annee-classe { font-size: 9px; color: #1E293B; text-align: center; margin-top: 3px; }
     .annee-classe strong { color: #00288e; }
-    .ecole-nom { font-size: 15px; font-weight: bold; color: #00288e; text-transform: uppercase; text-align: center; }
-    .ecole-info { font-size: 11.5px; color: #444653; text-align: center; margin-top: 3px; }
+    .ecole-nom { font-size: 14px; font-weight: bold; color: #00288e; text-transform: uppercase; text-align: center; }
+    .ecole-info { font-size: 9.5px; color: #444653; text-align: center; margin-top: 2px; }
     .ministere { font-size: 9.5px; font-weight: bold; text-transform: uppercase; color: #1E293B; text-align: center; }
-    .trimestre-badge { display: inline-block; background: #00288e; color: white; font-size: 10px; font-weight: bold; padding: 4px 12px; border-radius: 10px; margin-top: 6px; }
-    .ligne-separation { border-bottom: 2.5px solid #00288e; margin: 10px 0; }
+    .trimestre-badge { display: inline-block; background: #00288e; color: white; font-size: 9.5px; font-weight: bold; padding: 3px 10px; border-radius: 8px; margin-top: 5px; }
+    .ligne-separation { border-bottom: 2px solid #00288e; margin: 8px 0; }
 
-    .titre-bulletin { background: #00288e; color: white; text-align: center; padding: 9px; font-size: 13px; font-weight: bold; margin-bottom: 12px; letter-spacing: 0.5px; }
+    .titre-bulletin { background: #00288e; color: white; text-align: center; padding: 7px; font-size: 12.5px; font-weight: bold; margin-bottom: 9px; letter-spacing: 0.5px; }
 
-    .infos-eleve { width: 100%; border: 1.5px solid #00288e; border-radius: 4px; margin-bottom: 12px; border-collapse: collapse; }
-    .infos-eleve td { padding: 6px 12px; font-size: 10px; border: 0.5px solid #c4c5d5; }
+    .infos-eleve { width: 100%; border: 1px solid #00288e; margin-bottom: 9px; border-collapse: collapse; }
+    .infos-eleve td { padding: 5px 10px; font-size: 9.5px; border: 0.5px solid #c4c5d5; }
     .infos-row { background: #eff4ff; }
     .infos-eleve .label { color: #444653; }
     .infos-eleve strong { color: #1E293B; }
 
-    .table-notes { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
+    .table-notes { width: 100%; border-collapse: collapse; margin-bottom: 9px; }
     .table-notes thead tr { background: #00288e; color: white; }
-    .table-notes thead th { padding: 8px 10px; text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: 0.3px; border: 1px solid #0039b3; }
+    .table-notes thead th { padding: 6px 9px; text-align: left; font-size: 9.5px; text-transform: uppercase; border: 1px solid #0039b3; }
     .table-notes tbody tr:nth-child(even) { background: #f8f9ff; }
-    .table-notes tbody td { padding: 7px 10px; border: 1px solid #c4c5d5; font-size: 10px; }
+    .table-notes tbody td { padding: 5px 9px; border: 1px solid #c4c5d5; font-size: 9.5px; }
     .note-val { color: #00288e; font-weight: bold; text-align: center; }
     .note-absent { color: #94a3b8; text-align: center; font-style: italic; }
-    .appreciation { font-weight: bold; text-align: center; font-size: 9.5px; }
+    .appreciation { font-weight: bold; text-align: center; font-size: 9px; }
     .app-excellent   { color: #14532d; }
     .app-tres-bien   { color: #1e40af; }
     .app-bien        { color: #065f46; }
@@ -48,12 +48,12 @@
     .app-insuffisant { color: #991b1b; }
     .app-absent      { color: #94a3b8; font-style: italic; }
     .totaux-row { background: #eff4ff !important; }
-    .totaux-row td { padding: 7px 10px; border: 1px solid #c4c5d5; font-size: 10px; font-weight: bold; }
+    .totaux-row td { padding: 5px 9px; border: 1px solid #c4c5d5; font-size: 9.5px; font-weight: bold; }
 
-    .resultat { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-    .resultat .titre-col { background: #00288e; color: white; font-weight: bold; font-size: 10px; padding: 8px 10px; text-align: center; border: 1px solid #0039b3; }
-    .resultat .val-col { background: #f8f9ff; font-weight: bold; color: #00288e; font-size: 13px; padding: 10px; text-align: center; border: 1px solid #c4c5d5; }
-    .mention-val { display: inline-block; padding: 3px 14px; border-radius: 12px; font-size: 11px; font-weight: bold; }
+    .resultat { width: 100%; border-collapse: collapse; margin-bottom: 7px; }
+    .resultat .titre-col { background: #00288e; color: white; font-weight: bold; font-size: 9.5px; padding: 6px 8px; text-align: center; border: 1px solid #0039b3; }
+    .resultat .val-col { background: #f8f9ff; font-weight: bold; color: #00288e; font-size: 12px; padding: 7px; text-align: center; border: 1px solid #c4c5d5; }
+    .mention-val { display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 10px; font-weight: bold; }
     .mention-tb  { background: #dcfce7; color: #166534; }
     .mention-b   { background: #dbeafe; color: #1e40af; }
     .mention-ab  { background: #e0e7ff; color: #3730a3; }
@@ -61,11 +61,11 @@
     .mention-i   { background: #fee2e2; color: #991b1b; }
     .mention-e   { background: #f0fdf4; color: #14532d; }
 
-    .signatures { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    .signatures td { width: 33%; text-align: center; padding: 8px 10px; border: none; }
-    .sig-box { border: 1px solid #c4c5d5; border-radius: 4px; padding: 6px; background: #f8f9ff; }
-    .sig-title { font-size: 10px; font-weight: bold; color: #00288e; margin-bottom: 35px; }
-    .sig-line { border-top: 1px dashed #c4c5d5; padding-top: 4px; font-size: 8.5px; color: #94a3b8; }
+    .signatures { width: 100%; border-collapse: collapse; margin-top: 9px; }
+    .signatures td { width: 33%; text-align: center; padding: 5px 8px; border: none; }
+    .sig-box { border: 1px solid #c4c5d5; border-radius: 4px; padding: 5px; background: #f8f9ff; }
+    .sig-title { font-size: 9.5px; font-weight: bold; color: #00288e; margin-bottom: 28px; }
+    .sig-line { border-top: 1px dashed #c4c5d5; padding-top: 3px; font-size: 8px; color: #94a3b8; }
     </style>
 </head>
 <body>
@@ -269,25 +269,91 @@
 
     {{-- BILAN ANNUEL (T3 uniquement) --}}
     @if($composition->trimestre == 3 && $moyenneAnnuelle !== null)
+    @php
+        $user = $eleve->user;
+        $classeActive = $user->classes()
+            ->where('annee_scolaire', $user->annee_scolaire)
+            ->latest()->first();
+
+        $comps = \App\Models\Composition::where('user_id', $user->id)
+            ->where('classe_id', $classeActive?->id)
+            ->whereIn('trimestre', [1, 2, 3])
+            ->orderBy('trimestre')
+            ->get();
+
+        $recapTrimestres = [];
+        foreach ($comps as $comp) {
+            $notesComp = $eleve->notes()
+                ->where('composition_id', $comp->id)
+                ->whereNotNull('note')
+                ->get();
+
+            $moyComp = null;
+            $rangComp = null;
+
+            if ($notesComp->count() > 0) {
+                $moyenneService = new \App\Services\MoyenneService();
+                $moyComp  = $moyenneService->calculerMoyenneEleve($eleve, $comp);
+                $classement = $moyenneService->calculerClassement($comp);
+                $rangComp = $classement->firstWhere('eleve.id', $eleve->id)['rang'] ?? null;
+            } else {
+                $mm = \App\Models\MoyenneManuelle::where('user_id', $user->id)
+                    ->where('eleve_id', $eleve->id)
+                    ->where('trimestre', $comp->trimestre)
+                    ->first();
+                if ($mm) $moyComp = $mm->moyenne;
+            }
+
+            $recapTrimestres[$comp->trimestre] = [
+                'moyenne' => $moyComp,
+                'rang'    => $rangComp,
+            ];
+        }
+    @endphp
+
+    {{-- Récapitulatif des 3 trimestres --}}
     <table class="resultat" style="margin-top: 8px;">
         <tr>
-            <td class="titre-col" colspan="3" style="background: #1e3a5f; text-align: center; font-size: 11px;">
-                ★ BILAN ANNUEL
+            <td class="titre-col" colspan="6" style="background: #1e3a5f; text-align: center; font-size: 11px;">
+                RÉCAPITULATIF DES TRIMESTRES
             </td>
         </tr>
         <tr>
-            <td class="titre-col">Moyenne annuelle</td>
-            <td class="titre-col">Rang annuel</td>
-            <td class="titre-col">Décision du conseil</td>
+            <td class="titre-col"></td>
+            <td class="titre-col">Trimestre 1</td>
+            <td class="titre-col">Trimestre 2</td>
+            <td class="titre-col">Trimestre 3</td>
+            <td class="titre-col">Moy. Annuelle</td>
+            <td class="titre-col">Rang Annuel</td>
         </tr>
         <tr>
+            <td class="val-col" style="font-size: 10px; color: #444653; font-weight: bold;">Moyenne</td>
+            @foreach([1, 2, 3] as $t)
+            <td class="val-col" style="font-size: 12px;">
+                @if(isset($recapTrimestres[$t]) && $recapTrimestres[$t]['moyenne'] !== null)
+                    {{ number_format($recapTrimestres[$t]['moyenne'], 2) }}/10
+                @else
+                    <span style="color:#94a3b8; font-size:10px;">—</span>
+                @endif
+            </td>
+            @endforeach
             <td class="val-col" style="font-size: 15px; font-weight: bold; color: #00288e;">
-                {{ number_format($moyenneAnnuelle, 2) }} / 10
+                {{ number_format($moyenneAnnuelle, 2) }}/10
             </td>
             <td class="val-col">
                 {{ $rangAnnuel }}<sup>{{ $rangAnnuel == 1 ? 'er' : 'ème' }}</sup>
             </td>
-            <td class="val-col" style="font-size: 12px; {{ $decision == 'Passe en classe supérieure' ? 'color: #166534;' : 'color: #991b1b;' }}">
+        </tr>
+    </table>
+
+    {{-- Décision du conseil --}}
+    <table class="resultat" style="margin-top: 5px;">
+        <tr>
+            <td class="titre-col" style="background: #1e3a5f;">★ DÉCISION DU CONSEIL</td>
+        </tr>
+        <tr>
+            <td class="val-col" style="font-size: 13px; font-weight: bold;
+                {{ $decision == 'Passe en classe supérieure' ? 'color: #166534;' : 'color: #991b1b;' }}">
                 {{ $decision }}
             </td>
         </tr>
