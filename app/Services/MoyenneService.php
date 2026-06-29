@@ -8,11 +8,11 @@ use Illuminate\Support\Collection;
 
 class MoyenneService
 {
-    public function calculerMoyenneEleve(Eleve $eleve, Composition $composition): float
+   public function calculerMoyenneEleve(Eleve $eleve, Composition $composition): float
     {
         $notes = $eleve->notes()
             ->where('composition_id', $composition->id)
-            ->whereNotNull('note') // absents exclus du calcul
+            ->whereNotNull('note')
             ->with('matiere')
             ->get();
 
@@ -20,16 +20,15 @@ class MoyenneService
             return 0;
         }
 
-        $total = 0;
-        $count = 0;
+        $totalObtenu = 0;
+        $totalMax    = 0;
 
         foreach ($notes as $note) {
-            $noteRamenee = $note->note * 10 / $note->matiere->note_sur;
-            $total += $noteRamenee;
-            $count++;
+            $totalObtenu += $note->note;
+            $totalMax    += $note->matiere->note_sur;
         }
 
-        return $count > 0 ? round($total / $count, 2) : 0;
+        return $totalMax > 0 ? round($totalObtenu / $totalMax * 10, 2) : 0;
     }
 
     public function eleveADesNotes(Eleve $eleve, Composition $composition): bool

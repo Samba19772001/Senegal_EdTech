@@ -163,9 +163,12 @@ class BulletinController extends Controller
             ];
         })
         ->sortByDesc('moyenne')
-        ->values()
-        ->map(function($item, $index) {
-            $item['rang'] = $index + 1;
+        ->values();
+
+        $resultats = $resultats->map(function($item) use ($resultats) {
+            $item['rang'] = $resultats->filter(
+                fn($other) => $other['moyenne'] > $item['moyenne']
+            )->count() + 1;
             return $item;
         });
 
@@ -226,9 +229,12 @@ class BulletinController extends Controller
             ];
         })
         ->sortByDesc('moyenne')
-        ->values()
-        ->map(function($item, $index) {
-            $item['rang'] = $index + 1;
+        ->values();
+
+        $resultats = $resultats->map(function($item) use ($resultats) {
+            $item['rang'] = $resultats->filter(
+                fn($other) => $other['moyenne'] > $item['moyenne']
+            )->count() + 1;
             return $item;
         });
 
@@ -275,13 +281,19 @@ class BulletinController extends Controller
                 } else {
                     $mm = \App\Models\MoyenneManuelle::where('user_id', $user->id)
                         ->where('eleve_id', $eleve->id)
-                        ->where('trimestre', $t)->first();
+                        ->where('trimestre', $t)
+                        ->where('annee_scolaire', $user->annee_scolaire)
+                        ->first();
+
                     $moyennes[$t] = $mm ? $mm->moyenne : null;
                 }
             }
 
-            $moyAnnuelle = $moyenneService->calculerMoyenneAnnuelle($eleve);
-            $decision    = $moyAnnuelle !== null ? $moyenneService->getDecision($moyAnnuelle) : '—';
+            $moyennesValides = array_filter($moyennes, fn($m) => $m !== null);
+            $moyAnnuelle = count($moyennesValides) > 0
+                ? round(array_sum($moyennesValides) / count($moyennesValides), 2)
+                : null;
+            $decision = $moyAnnuelle !== null ? $moyenneService->getDecision($moyAnnuelle) : '—';
 
             return [
                 'eleve'       => $eleve,
@@ -291,9 +303,12 @@ class BulletinController extends Controller
             ];
         })
         ->sortByDesc('moyAnnuelle')
-        ->values()
-        ->map(function($item, $index) {
-            $item['rang'] = $index + 1;
+        ->values();
+
+        $resultats = $resultats->map(function($item) use ($resultats) {
+            $item['rang'] = $resultats->filter(
+                fn($other) => $other['moyAnnuelle'] > $item['moyAnnuelle']
+            )->count() + 1;
             return $item;
         });
 
@@ -339,9 +354,11 @@ class BulletinController extends Controller
                 }
             }
 
-            $moyAnnuelle = $moyenneService->calculerMoyenneAnnuelle($eleve);
-            $decision    = $moyAnnuelle !== null ? $moyenneService->getDecision($moyAnnuelle) : '—';
-
+            $moyennesValides = array_filter($moyennes, fn($m) => $m !== null);
+            $moyAnnuelle = count($moyennesValides) > 0
+                ? round(array_sum($moyennesValides) / count($moyennesValides), 2)
+                : null;
+            $decision = $moyAnnuelle !== null ? $moyenneService->getDecision($moyAnnuelle) : '—';
             return [
                 'eleve'       => $eleve,
                 'moyennes'    => $moyennes,
@@ -350,9 +367,12 @@ class BulletinController extends Controller
             ];
         })
         ->sortByDesc('moyAnnuelle')
-        ->values()
-        ->map(function($item, $index) {
-            $item['rang'] = $index + 1;
+        ->values();
+
+        $resultats = $resultats->map(function($item) use ($resultats) {
+            $item['rang'] = $resultats->filter(
+                fn($other) => $other['moyAnnuelle'] > $item['moyAnnuelle']
+            )->count() + 1;
             return $item;
         });
 
