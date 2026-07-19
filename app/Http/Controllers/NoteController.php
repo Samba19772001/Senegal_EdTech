@@ -97,34 +97,51 @@ class NoteController extends Controller
         $user   = auth()->user();
         $niveau = $user->niveau_enseignement;
 
-        $compositions = \App\Models\Composition::where('user_id', $user->id)->get();
+        // Récupérer uniquement les compositions de la classe active
+        $classeActive = $user->classes()
+            ->where('annee_scolaire', $user->annee_scolaire)
+            ->latest()->first();
 
-        $matieres = Matiere::where(function($q) use ($niveau) {
+        $compositions = \App\Models\Composition::where('user_id', $user->id)
+            ->where('classe_id', $classeActive?->id)
+            ->orderBy('trimestre')
+            ->get();
+
+        $matieres = \App\Models\Matiere::where(function($q) use ($niveau) {
             $q->where('is_default', true)->where('classe_niveau', $niveau);
-        })->orWhere(function($q) use ($niveau) {
-            $q->where('user_id', auth()->id())
-              ->where('is_default', false)
-              ->where('classe_niveau', $niveau);
+        })->orWhere(function($q) use ($niveau, $user) {
+            $q->where('user_id', $user->id)
+            ->where('is_default', false)
+            ->where('classe_niveau', $niveau);
         })->orderBy('ordre')->get();
 
-        $query = Note::where('notes.user_id', $user->id)
+        $query = \App\Models\Note::where('notes.user_id', $user->id)
             ->join('matieres', 'notes.matiere_id', '=', 'matieres.id')
             ->join('compositions', 'notes.composition_id', '=', 'compositions.id')
+            ->join('eleves', 'notes.eleve_id', '=', 'eleves.id')
             ->orderBy('compositions.trimestre')
             ->orderBy('matieres.ordre')
-            ->orderBy('matieres.nom')
+            ->orderBy('eleves.nom')
             ->select('notes.*');
 
         if ($request->composition_id) {
-            $query->where('composition_id', $request->composition_id);
+            $query->where('notes.composition_id', $request->composition_id);
         }
         if ($request->matiere_id) {
-            $query->where('matiere_id', $request->matiere_id);
+            $query->where('notes.matiere_id', $request->matiere_id);
         }
 
-        $notes = $query->paginate(20);
+        // Filtrer uniquement les notes de la classe active
+        if ($classeActive) {
+            $compositionIds = $compositions->pluck('id');
+            $query->whereIn('notes.composition_id', $compositionIds);
+        }
 
-        $toutesNotes = Note::where('user_id', $user->id)
+        $notes = $query->with(['eleve', 'matiere', 'composition'])->paginate(50);
+
+        // Moyenne sur les notes non-NULL uniquement
+        $toutesNotes = \App\Models\Note::where('user_id', $user->id)
+            ->whereIn('composition_id', $compositions->pluck('id'))
             ->whereNotNull('note')
             ->with('matiere')
             ->get();
