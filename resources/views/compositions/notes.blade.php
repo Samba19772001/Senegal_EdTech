@@ -255,7 +255,6 @@
 <script>
     function calculerSur10(input, eleveId, noteSur) {
         const note = parseFloat(input.value);
-
         if (!isNaN(note) && note >= 0 && note <= noteSur) {
             input.classList.remove('border-red-400');
             input.classList.add('border-green-400');
@@ -319,5 +318,63 @@
             }
         });
     }
+
+    // Navigation haut/bas entre les inputs + suppression des flèches
+    document.addEventListener('DOMContentLoaded', function () {
+        const inputs = [...document.querySelectorAll('.note-input')];
+
+        inputs.forEach((input, index) => {
+
+            // Supprimer les flèches visuelles via CSS
+            input.style.MozAppearance = 'textfield';
+            input.style.appearance = 'textfield';
+
+            // Bloquer les flèches haut/bas du spinner natif
+            input.addEventListener('keydown', function (e) {
+                if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    // Aller à l'input précédent non désactivé
+                    for (let i = index - 1; i >= 0; i--) {
+                        if (!inputs[i].disabled) {
+                            inputs[i].focus();
+                            inputs[i].select();
+                            break;
+                        }
+                    }
+                }
+                if (e.key === 'ArrowDown' || e.key === 'Enter') {
+                    e.preventDefault();
+                    // Aller à l'input suivant non désactivé
+                    for (let i = index + 1; i < inputs.length; i++) {
+                        if (!inputs[i].disabled) {
+                            inputs[i].focus();
+                            inputs[i].select();
+                            break;
+                        }
+                    }
+                }
+            });
+
+            // Bloquer la molette souris qui change la valeur
+            input.addEventListener('wheel', function (e) {
+                e.preventDefault();
+            }, { passive: false });
+        });
+    });
 </script>
+
+{{-- Supprimer les flèches spinner CSS --}}
+@push('styles')
+<style>
+    input[type=number].note-input::-webkit-outer-spin-button,
+    input[type=number].note-input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    input[type=number].note-input {
+        -moz-appearance: textfield;
+    }
+</style>
+@endpush
+
 @endpush
