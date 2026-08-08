@@ -11,6 +11,7 @@ use App\Http\Controllers\NoteController;
 use App\Http\Controllers\BulletinController;
 use App\Http\Controllers\ParametreController;
 use App\Http\Controllers\MoyenneManuellController;
+use App\Http\Controllers\StatistiqueController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -113,6 +114,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::get('/eleves/{id}/profil', [EleveController::class, 'profil'])->name('eleves.profil');
     Route::get('/eleves/suggestions', [EleveController::class, 'suggestions'])->name('eleves.suggestions');
+
+    Route::get('/statistiques', [StatistiqueController::class, 'index'])->name('statistiques.index');
 });
 
 require __DIR__.'/auth.php';
