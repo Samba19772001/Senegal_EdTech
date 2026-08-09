@@ -365,11 +365,11 @@ resources/views/
 
 ## 👨‍💻 Équipe
 
-Projet développé dans le cadre d'un portfolio full-stack :
+Projet développé :
 
 | Membre | Rôle |
 |--------|------|
-| **Samba Doucoure** | Développeur Full-Stack (Backend + Frontend) |
+| **Pape Samba Doucoure** | Développeur Full-Stack (Backend + Frontend) |
 
 ---
 
