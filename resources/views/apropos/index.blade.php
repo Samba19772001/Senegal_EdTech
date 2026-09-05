@@ -17,9 +17,9 @@
             </div>
             <div>
                 <h2 class="text-xl lg:text-2xl font-bold">Senegal EdTech</h2>
-                <p class="text-blue-200 text-sm mt-1">Portail de l'enseignement primaire</p>
+                <p class="text-blue-200 text-sm mt-1">Portail de l'enseignement élémentaire</p>
                 <p class="text-blue-100 text-sm mt-2">
-                    Une solution digitale moderne dédiée aux enseignants du primaire au Sénégal,
+                    Une solution digitale moderne dédiée aux enseignants au Sénégal,
                     pour simplifier la gestion pédagogique et valoriser le travail des éducateurs.
                 </p>
             </div>
@@ -37,7 +37,7 @@
             </div>
             <h3 class="font-bold text-text-dark text-base mb-2">Notre Mission</h3>
             <p class="text-text-muted text-sm leading-relaxed">
-                Digitaliser la gestion pédagogique des classes du primaire pour permettre
+                Digitaliser la gestion pédagogique des classes élémentaire pour permettre
                 aux enseignants de se concentrer sur l'essentiel : enseigner.
             </p>
         </div>

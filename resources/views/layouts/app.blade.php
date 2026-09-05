@@ -60,7 +60,7 @@
                 </div>
                 <div>
                     <p class="text-text-dark font-bold text-sm leading-tight">Senegal EdTech</p>
-                    <p class="text-text-muted text-xs">Portail de l'enseignement primaire</p>
+                    <p class="text-text-muted text-xs">Portail de l'enseignement élémentaire</p>
                 </div>
             </div>
             {{-- Bouton fermer sidebar sur mobile --}}
